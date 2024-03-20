@@ -25,7 +25,7 @@ def load_command_args(sp: _SubParsersAction) -> None:
 
     # Volume name
     msg = """The named volume to create from the backup. If the named
-    volume already exists, the program will terminate with no action.
+    volume already exists, vbart will terminate with no action.
     Otherwise, a new empty volume will be created with the given name
     and the backup will be restored to that volume."""
     parser.add_argument(
