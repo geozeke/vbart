@@ -7,8 +7,8 @@ alt = "Dinobox logo" width="120"/>
 ## Volume Backup And Restoration Tool for Docker
 
 Why is backing up named docker volumes so hard? There's an
-[extension][def] for Docker Desktop, but I just wanted a simple, easy to
-use, command-line tool that would allow me to backup and restore my
+[extension][def] for Docker Desktop, but I just want a simple, easy to
+use, command-line tool that allows me to backup and restore my named
 docker volumes.
 
 That's what vbart does.
@@ -72,16 +72,15 @@ YYYYMMDD-mysql_db-backup.xz
 vbart backups [-v VOLUMES]
 ```
 
-`VOLUMES` is the optional name of a textfile that contains volume names
-(one per line) that you want to backup. Within `VOLUMES` blank lines and
-lines beginning with `#` are ignored, so you can comment the file if you
-wish.
+Note the plural command name (`backups` as opposed to `backup`).
+`VOLUMES` is the optional name of a textfile that contains case
+sensitive volume names (one per line) that you want to backup. Within
+`VOLUMES` blank lines and lines beginning with `#` are ignored, so you
+can comment the file if you wish.
 
 If `VOLUMES` is not specified, all active docker volumes on the current
-host are backed up.
-
-All volume backups are saved in the current working directory and named
-as:
+host are backed up. All volume backups are saved in the current working
+directory and named as:
 
 ```text
 YYYYMMDD-{volume}-backup.xz
