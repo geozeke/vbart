@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "vbart"
+version = "0.1.0"
+description = "Volume Backup And Restoration Tool"
+authors = ["Peter Nardi <pete@nardi.com>"]
+readme = "README.md"
+packages = [{ include = "vbart", from = "src" }]
+
+[tool.poetry.scripts]
+vbart = "vbart.__main__:main"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+docker = "^7.0.0"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.0.0"
+flake8-docstrings = "^1.7.0"
+mypy = "^1.9.0"
+black = "^24.3.0"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

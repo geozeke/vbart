@@ -1,0 +1,17 @@
+"""Constants."""
+
+from pathlib import Path
+
+GREEN = "\033[0;32;49m"
+RED = "\033[0;31;49m"
+COLOR_END = "\x1b[0m"
+
+PASS = f"{GREEN}\u2714{COLOR_END}"
+FAIL = f"{RED}\u2718{COLOR_END}"
+
+HOME = Path(__file__).parents[2]
+
+ARG_PARSERS_BASE = HOME / "src/parsers"
+BASE_IMAGE = "alpine:latest"
+DOCKERFILE_PATH = HOME / "src/vbart"
+UTILITY_IMAGE = "vbart_utility"
