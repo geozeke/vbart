@@ -1,10 +1,43 @@
 [tool.poetry]
 name = "vbart"
 version = "0.1.0"
-description = "Volume Backup And Restoration Tool"
+description = "Volume Backup And Restoration Tool for Docker"
 authors = ["Peter Nardi <pete@nardi.com>"]
+maintainers = ["Peter Nardi <pete@nardi.com>"]
+homepage = "https://github.com/geozeke/vbart"
 readme = "README.md"
 packages = [{ include = "vbart", from = "src" }]
+keywords = [
+    "archive",
+    "backup",
+    "compose",
+    "compress",
+    "compression",
+    "docker",
+    "restore",
+    "vbart",
+    "volume",
+    "volumes",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Archiving :: Backup",
+    "Topic :: System :: Archiving :: Compression",
+    "Topic :: Utilities",
+]
+
+[tool.poetry.urls]
+"Source Code" = "https://github.com/geozeke/vbart"
+"Bug Tracker" = "https://github.com/geozeke/vbart/issues"
 
 [tool.poetry.scripts]
 vbart = "vbart.__main__:main"

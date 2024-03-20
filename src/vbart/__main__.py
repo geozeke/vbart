@@ -50,7 +50,7 @@ def main() -> None:
 
     msg = """A utility to easily backup and restore named docker
     volumes. For help on any command below, use: vbart {command} -h"""
-    epi = "Version: 1.0.0"
+    epi = "Version: 0.1.0"
     parser = argparse.ArgumentParser(
         description=msg,
         epilog=epi,
