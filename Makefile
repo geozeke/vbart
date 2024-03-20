@@ -55,9 +55,20 @@ reset: clean ## remove venv, artifacts, and init directory
 # --------------------------------------------
 
 .PHONY: clean
-clean: ## cleanup python runtime artifacts
-	@echo Cleaning python runtime artifacts
+clean: ## cleanup python runtime and build artifacts
+	@echo Cleaning python runtime and build artifacts
 	@find . -type d -name __pycache__ -exec rm -rf {} \; -prune
+	@rm -rf build/
+	@rm -rf dist/
+	@find . -type d -name __pycache__ -exec rm -rf {} \; -prune
+	@find . -type d -name .pytest_cache -exec rm -rf {} \; -prune
+	@find . -type d -name .eggs -exec rm -rf {} \; -prune
+	@find . -type d -name htmlcov -exec rm -rf {} \; -prune
+	@find . -type d -name *.egg-info -exec rm -rf {} \; -prune
+	@find . -type f -name *.egg -delete
+	@find . -type f -name *.pyc -delete
+	@find . -type f -name *.pyo -delete
+	@find . -type f -name *.coverage -delete
 
 # --------------------------------------------
 
