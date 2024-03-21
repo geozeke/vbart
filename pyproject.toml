@@ -36,6 +36,7 @@ classifiers = [
     "Topic :: System :: Archiving :: Compression",
     "Topic :: Utilities",
 ]
+include = ["LICENSE"]
 
 [tool.poetry.urls]
 "Source Code" = "https://github.com/geozeke/vbart"
