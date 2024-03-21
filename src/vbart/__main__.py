@@ -8,13 +8,15 @@ import shutil
 import sys
 from pathlib import Path
 from types import ModuleType
+from typing import List
+from typing import Union
 
 from vbart.constants import ARG_PARSERS_BASE
 
 # ======================================================================
 
 
-def collect_modules(start: Path) -> list[str]:
+def collect_modules(start: Path) -> List[str]:
     """Collect the names of all modules to import.
 
     Parameters
@@ -27,7 +29,7 @@ def collect_modules(start: Path) -> list[str]:
     list[str]
         A list of module names.
     """
-    mod_names: list[str] = []
+    mod_names: List[str] = []
     for p in start.iterdir():
         if p.is_file() and p.name != "__init__.py":
             if "plugins" in str(p):
@@ -59,8 +61,8 @@ def main() -> None:
 
     # Dynamically load argument subparsers.
 
-    mod_names: list[str] = []
-    mod: ModuleType | None = None
+    mod_names: List[str] = []
+    mod: Union[ModuleType, None] = None
     mod_names = collect_modules(ARG_PARSERS_BASE)
     mod_names.sort()
 
@@ -73,17 +75,16 @@ def main() -> None:
         mod.load_command_args(subparsers)
 
     args = parser.parse_args()
-    match (args.cmd):
-        case "backup":
-            mod = importlib.import_module("vbart.backup")
-        case "backups":
-            mod = importlib.import_module("vbart.backups")
-        case "restore":
-            mod = importlib.import_module("vbart.restore")
-        case "refresh":
-            mod = importlib.import_module("vbart.refresh")
-        case _:
-            mod = importlib.import_module("vbart.null")
+    if args.cmd == "backup":
+        mod = importlib.import_module("vbart.backup")
+    elif args.cmd == "backups":
+        mod = importlib.import_module("vbart.backups")
+    elif args.cmd == "restore":
+        mod = importlib.import_module("vbart.restore")
+    elif args.cmd == "refresh":
+        mod = importlib.import_module("vbart.refresh")
+    else:
+        mod = importlib.import_module("vbart.null")
     mod.task_runner(args)
 
     return
