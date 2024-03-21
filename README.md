@@ -1,5 +1,16 @@
 # vbart
 
+![GitHub](https://img.shields.io/github/license/geozeke/vbart)
+![PyPI](https://img.shields.io/pypi/v/vbart)
+![PyPI - Status](https://img.shields.io/pypi/status/vbart)
+![GitHub last commit](https://img.shields.io/github/last-commit/geozeke/vbart)
+![GitHub issues](https://img.shields.io/github/issues/geozeke/vbart)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/parser201)
+![GitHub repo size](https://img.shields.io/github/repo-size/geozeke/vbart)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vbart)
+
+<br>
+
 <img
 src="https://drive.google.com/uc?export=view&id=1H04KVAA3ohH_dLXIrC0bXuJXDn3VutKc"
 alt = "Dinobox logo" width="120"/>
@@ -9,9 +20,9 @@ alt = "Dinobox logo" width="120"/>
 Why is backing up named docker volumes so hard? There's an
 [extension][def] for Docker Desktop, but I just want a simple, easy to
 use, command-line tool that allows me to backup and restore my named
-docker volumes.
+docker volumes. That's what vbart does.
 
-That's what vbart does. With vbart you can:
+With vbart you can:
 
 * Backup a single named volume.
 * Backup all active named volumes on your host.
@@ -51,7 +62,7 @@ vbart -h
 vbart backup volume
 ```
 
-For example, to backup a named volume called `mysql_db`, use:
+For example, to backup a volume named `mysql_db`, use:
 
 ```shell
 vbart backup mysql_db
