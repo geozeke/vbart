@@ -7,6 +7,7 @@ maintainers = ["Peter Nardi <pete@nardi.com>"]
 homepage = "https://github.com/geozeke/vbart"
 readme = "README.md"
 packages = [{ include = "vbart", from = "src" }]
+include = ["LICENSE"]
 keywords = [
     "archive",
     "backup",
@@ -36,7 +37,6 @@ classifiers = [
     "Topic :: System :: Archiving :: Compression",
     "Topic :: Utilities",
 ]
-include = ["LICENSE"]
 
 [tool.poetry.urls]
 "Source Code" = "https://github.com/geozeke/vbart"
