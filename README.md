@@ -11,18 +11,16 @@ Why is backing up named docker volumes so hard? There's an
 use, command-line tool that allows me to backup and restore my named
 docker volumes.
 
-That's what vbart does.
+That's what vbart does. With vbart you can:
 
-All backups are stored in compressed (xz) tar archives. With vbart you
-can:
+* Backup a single named volume.
+* Backup all active named volumes on your host.
+* Backup just the volumes you list in a separate file.
+* Restore a single backup to a named volume.
 
-1. Backup a single named volume.
-2. Backup all active named volumes on your host.
-3. Backup just the volumes you list in a separate file.
-4. Restore a single backup to a named volume.
-
-Once you create a backup, you can copy it off-host, install it on
-another machine, share with friends, etc.
+All backups are stored in compressed (xz) tar archives. Once you create
+a backup, you can copy it off-host, install it on another machine, share
+with friends, etc.
 
 ### Installation
 
