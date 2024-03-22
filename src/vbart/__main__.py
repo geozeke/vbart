@@ -50,8 +50,9 @@ def main() -> None:
         print("\nYou must have docker installed to use vbart.\n")
         sys.exit(1)
 
-    msg = """A utility to easily backup and restore named docker
-    volumes. For help on any command below, use: vbart {command} -h"""
+    msg = """Volume Backup And Restoration Tool (for docker). A tool to
+    easily backup and restore named docker volumes. For help on any
+    command below, use: vbart {command} -h"""
     epi = "Version: 0.1.0"
     parser = argparse.ArgumentParser(
         description=msg,
@@ -67,7 +68,7 @@ def main() -> None:
     mod_names.sort()
 
     # Argument parsers are saved in alphabetical order. This is a little
-    # slight-of-hand to get the the desired order presented on screen.
+    # slight-of-hand to get the desired order presented on screen.
     mod_names[-1], mod_names[-2] = mod_names[-2], mod_names[-1]
 
     for mod_name in mod_names:

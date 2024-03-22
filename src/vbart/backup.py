@@ -24,16 +24,16 @@ def task_runner(args: argparse.Namespace) -> None:
     client = docker.from_env()
 
     try:
-        client.volumes.get(args.volume)
-        msg = f'Backing up volume "{args.volume}"'
+        client.volumes.get(args.volume_name)
+        msg = f'Backing up volume "{args.volume_name}"'
         labels = Labels(msg)
     except errors.NotFound:
-        print(f'Volume "{args.volume}" not found.')
+        print(f'Volume "{args.volume_name}" not found.')
         sys.exit(1)
 
     clear()
     labels.next()
-    print(backup_one_volume(args.volume))
+    print(backup_one_volume(args.volume_name))
 
     return
 

@@ -17,9 +17,9 @@ def load_command_args(sp: _SubParsersAction) -> None:
     # Volume name.
     msg = """The named docker volume to be backed up. The backup file
     will be created in the current directory with the name:
-    YYYYMMDD-{volume}-backup.xz"""
+    YYYYMMDD-{volume_name}-backup.xz"""
     parser.add_argument(
-        "volume",
+        "volume_name",
         type=str,
         help=msg,
     )

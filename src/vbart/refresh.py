@@ -9,7 +9,11 @@ from vbart.constants import UTILITY_IMAGE
 
 
 def task_runner(args: argparse.Namespace) -> None:
-    """Remove the vbart_utility image.
+    """Purge any dangling containers and remove the vbart_utility image.
+
+    If a backup is interrupted (e.g. cntl-C), then there may be dangling
+    containers that are still hanging on to existing volumes. The
+    refresh option purges those dangling containers.
 
     Parameters
     ----------
@@ -18,14 +22,31 @@ def task_runner(args: argparse.Namespace) -> None:
     """
     client = docker.from_env()
 
+    # Prune any dangling containers.
+
+    filter = {"ancestor": f"{UTILITY_IMAGE}:latest"}
+    dangling = client.containers.list(
+        all=True,
+        filters=filter,
+    )
+
+    for container in dangling:
+        container.remove(force=True)  # type:ignore
+
+    # Delete the utility image and appropriate dependency.
+
     try:
         client.images.get(UTILITY_IMAGE)
         client.images.remove(UTILITY_IMAGE)
     except errors.NotFound:
-        pass
+        print("No refresh needed. All good.")
+        return
 
+    if dangling:
+        noun = "container" if len(dangling) == 1 else "containers"
+        print(f"{len(dangling)} dangling {noun} removed.")
     print(f"The {UTILITY_IMAGE} image was deleted.")
-    print("A fresh one will be created the next time you run vbart.")
+    print(f"{UTILITY_IMAGE} will be recreated the next time you run vbart.")
 
     return
 

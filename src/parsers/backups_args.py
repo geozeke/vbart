@@ -8,7 +8,7 @@ COMMAND_NAME = "backups"
 
 def load_command_args(sp: _SubParsersAction) -> None:
     """Assemble the argument parser."""
-    msg = """Backup multiple docker volumes."""
+    msg = """Backup multiple named docker volumes."""
     parser = sp.add_parser(
         name=COMMAND_NAME,
         help=msg,
@@ -22,7 +22,7 @@ def load_command_args(sp: _SubParsersAction) -> None:
     only those volumes will be backed up. When processing a file of
     volume names, blank lines and lines beginning with '#' will be
     ignored. Each backup created will be named:
-    YYYYMMDD-{volume}-backup.xz"""
+    YYYYMMDD-{volume_name}-backup.xz"""
     parser.add_argument(
         "-v",
         "--volumes",

@@ -56,10 +56,10 @@ For an overview, run:
 vbart -h
 ```
 
-### Backup a single volume
+### Backup a Single Volume
 
 ```shell
-vbart backup volume
+vbart backup volume_name
 ```
 
 For example, to backup a volume named `mysql_db`, use:
@@ -75,7 +75,7 @@ named:
 YYYYMMDD-mysql_db-backup.xz
 ```
 
-### Backup multiple volumes
+### Backup Multiple Volumes
 
 ```shell
 vbart backups [-v VOLUMES]
@@ -92,22 +92,40 @@ host are backed up. All volume backups are saved in the current working
 directory and named as:
 
 ```text
-YYYYMMDD-{volume}-backup.xz
+YYYYMMDD-{volume_name}-backup.xz
 ```
 
-### Restore a single volume
+### Restore a Single Volume
 
 ```shell
 vbart restore backup_file volume_name
 ```
 
 The first argument (`backup_file`) is the compressed tar archive you
-created when you made a backup. The file should have a `.xz` extension.
+created when you made a backup. The file must have a `.xz` extension.
 
 The second argument (`volume_name`) is the named volume to create from
 the backup. If the named volume already exists, vbart will terminate
 with no action. Otherwise, a new empty volume will be created with the
 given name and the backup will be restored to that volume.
+
+### Refresh vbart
+
+If vbart is interrupted during execution (e.g. hitting `Control+C`),
+then there may be dangling docker containers that hang on to existing
+volumes. Running the refresh command will clear those dangling
+containers.
+
+Also, when you run vbart for the first time, it creates a small
+(alpine-based) docker image to perform the actual backups. This image is
+called `vbart_utility`. The refresh command also deletes the utility
+image, causing it to be recreated the next time you run vbart.
+
+To refresh vbart, use:
+
+```shell
+vbart refresh
+```
 
 [def]: https://hub.docker.com/extensions/docker/volumes-backup-extension
 [def2]: https://pipx.pypa.io/stable/
