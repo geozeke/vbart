@@ -9,9 +9,9 @@ COLOR_END = "\x1b[0m"
 PASS = f"{GREEN}\u2714{COLOR_END}"
 FAIL = f"{RED}\u2718{COLOR_END}"
 
-HOME = Path(__file__).parents[2]
+HOME = Path(__file__).parent
 
-ARG_PARSERS_BASE = HOME / "src/parsers"
+ARG_PARSERS_BASE = HOME / "parsers"
 BASE_IMAGE = "alpine:latest"
-DOCKERFILE_PATH = HOME / "src/vbart"
+DOCKERFILE_PATH = HOME
 UTILITY_IMAGE = "vbart_utility"
