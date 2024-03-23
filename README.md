@@ -5,7 +5,7 @@
 ![PyPI - Status](https://img.shields.io/pypi/status/vbart)
 ![GitHub last commit](https://img.shields.io/github/last-commit/geozeke/vbart)
 ![GitHub issues](https://img.shields.io/github/issues/geozeke/vbart)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/parser201)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/vbart)
 ![GitHub repo size](https://img.shields.io/github/repo-size/geozeke/vbart)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/vbart)
 
