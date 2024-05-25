@@ -18,9 +18,9 @@ alt = "Dinobox logo" width="120"/>
 ## Volume Backup And Restoration Tool for Docker
 
 Why is backing up named docker volumes so hard? There's an
-[extension][def] for Docker Desktop, but I just want a simple, easy to
-use, command-line tool that allows me to backup and restore my named
-docker volumes. That's what vbart does.
+[extension][def] for Docker Desktop, but I just want a simple,
+easy-to-use command line tool that allows me to backup and restore my
+named docker volumes. That's what vbart does.
 
 With vbart you can:
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vbart"
-version = "0.1.1"
+version = "0.1.2"
 description = "Volume Backup And Restoration Tool for Docker"
 authors = ["Peter Nardi <pete@nardi.com>"]
 maintainers = ["Peter Nardi <pete@nardi.com>"]
