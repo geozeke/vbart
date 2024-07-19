@@ -48,8 +48,7 @@ def main() -> None:
         sys.exit(1)
 
     msg = """Volume Backup And Restoration Tool (for docker). A tool to
-    easily backup and restore named docker volumes. For help on any
-    command below, use: vbart {command} -h"""
+    easily backup and restore named docker volumes."""
     epi = "Version: 0.1.3"
     parser = argparse.ArgumentParser(
         description=msg,
@@ -61,7 +60,12 @@ def main() -> None:
         action="version",
         version="%(prog)s 0.1.3",
     )
-    subparsers = parser.add_subparsers(title="commands", dest="cmd")
+    msg = "For help on any command below, run: vbart {command} -h"
+    subparsers = parser.add_subparsers(
+        title="commands",
+        dest="cmd",
+        description=msg,
+    )
 
     # Dynamically load argument subparsers.
 
