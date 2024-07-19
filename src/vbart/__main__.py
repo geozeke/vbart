@@ -16,7 +16,7 @@ from vbart.constants import ARG_PARSERS_BASE
 # ======================================================================
 
 
-def collect_modules(start: Path) -> List[str]:
+def collect_parsers(start: Path) -> List[str]:
     """Collect the names of all modules to import.
 
     Parameters
@@ -29,11 +29,11 @@ def collect_modules(start: Path) -> List[str]:
     list[str]
         A list of module names.
     """
-    mod_names: List[str] = []
+    parser_names: List[str] = []
     for p in start.iterdir():
         if p.is_file() and p.name != "__init__.py":
-            mod_names.append(f"vbart.parsers.{p.stem}")
-    return mod_names
+            parser_names.append(f"parsers.{p.stem}")
+    return parser_names
 
 
 # ======================================================================
@@ -58,17 +58,17 @@ def main() -> None:
 
     # Dynamically load argument subparsers.
 
-    mod_names: List[str] = []
+    parser_names: List[str] = []
     mod: Union[ModuleType, None] = None
-    mod_names = collect_modules(ARG_PARSERS_BASE)
-    mod_names.sort()
+    parser_names = collect_parsers(ARG_PARSERS_BASE)
+    parser_names.sort()
 
     # Argument parsers are saved in alphabetical order. This is a little
     # slight-of-hand to get the desired order presented on screen.
-    mod_names[-1], mod_names[-2] = mod_names[-2], mod_names[-1]
+    parser_names[-1], parser_names[-2] = parser_names[-2], parser_names[-1]
 
-    for mod_name in mod_names:
-        mod = importlib.import_module(mod_name)
+    for p_name in parser_names:
+        mod = importlib.import_module(p_name)
         mod.load_command_args(subparsers)
 
     args = parser.parse_args()
