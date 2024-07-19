@@ -17,7 +17,7 @@ from vbart.constants import ARG_PARSERS_BASE
 
 
 def collect_parsers(start: Path) -> List[str]:
-    """Collect the names of all modules to import.
+    """Collect the module names of all argument parsers to import.
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ def collect_parsers(start: Path) -> List[str]:
     Returns
     -------
     list[str]
-        A list of module names.
+        A list of argument parser module names.
     """
     parser_names: List[str] = []
     for p in start.iterdir():
@@ -59,7 +59,6 @@ def main() -> None:
     # Dynamically load argument subparsers.
 
     parser_names: List[str] = []
-    mod: Union[ModuleType, None] = None
     parser_names = collect_parsers(ARG_PARSERS_BASE)
     parser_names.sort()
 
@@ -67,6 +66,7 @@ def main() -> None:
     # slight-of-hand to get the desired order presented on screen.
     parser_names[-1], parser_names[-2] = parser_names[-2], parser_names[-1]
 
+    mod: Union[ModuleType, None] = None
     for p_name in parser_names:
         mod = importlib.import_module(p_name)
         mod.load_command_args(subparsers)
