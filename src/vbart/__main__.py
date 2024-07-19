@@ -56,8 +56,8 @@ def main() -> None:
         epilog=epi,
     )
     parser.add_argument(
-        "--version",
         "-v",
+        "--version",
         action="version",
         version="%(prog)s 0.1.3",
     )
