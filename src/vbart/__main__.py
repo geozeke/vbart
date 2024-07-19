@@ -11,6 +11,7 @@ from types import ModuleType
 from typing import List
 from typing import Union
 
+from vbart.constants import APPLICATION_NAME
 from vbart.constants import ARG_PARSERS_BASE
 
 # ======================================================================
@@ -71,17 +72,16 @@ def main() -> None:
         mod = importlib.import_module(p_name)
         mod.load_command_args(subparsers)
 
+    # Run the selected command. Python's argparse module guarantees that
+    # we'll get either: (1) a valid command or (2) no command at all
+    # (args.cmd == None). Given that, we can easily determine the
+    # entered command.
+
     args = parser.parse_args()
-    if args.cmd == "backup":
-        mod = importlib.import_module("vbart.backup")
-    elif args.cmd == "backups":
-        mod = importlib.import_module("vbart.backups")
-    elif args.cmd == "restore":
-        mod = importlib.import_module("vbart.restore")
-    elif args.cmd == "refresh":
-        mod = importlib.import_module("vbart.refresh")
+    if args.cmd:
+        mod = importlib.import_module(f"{APPLICATION_NAME}.{args.cmd}")
     else:
-        mod = importlib.import_module("vbart.null")
+        mod = importlib.import_module(f"{APPLICATION_NAME}.null")
     mod.task_runner(args)
 
     return
