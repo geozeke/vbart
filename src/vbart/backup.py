@@ -8,7 +8,6 @@ from docker import errors
 
 from vbart.classes import Labels
 from vbart.utilities import backup_one_volume
-from vbart.utilities import clear
 from vbart.utilities import verify_utility_image
 
 
@@ -31,7 +30,6 @@ def task_runner(args: argparse.Namespace) -> None:
         print(f'Volume "{args.volume_name}" not found.')
         sys.exit(1)
 
-    clear()
     labels.next()
     print(backup_one_volume(args.volume_name))
 

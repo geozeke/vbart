@@ -11,7 +11,6 @@ from vbart.classes import Labels
 from vbart.constants import FAIL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
-from vbart.utilities import clear
 from vbart.utilities import verify_utility_image
 
 
@@ -57,7 +56,6 @@ def task_runner(args: argparse.Namespace) -> None:
     # Run the container and extract the backup.
 
     try:
-        clear()
         labels.next()
         client.containers.run(
             image=UTILITY_IMAGE,

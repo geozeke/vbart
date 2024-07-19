@@ -50,10 +50,16 @@ def main() -> None:
     msg = """Volume Backup And Restoration Tool (for docker). A tool to
     easily backup and restore named docker volumes. For help on any
     command below, use: vbart {command} -h"""
-    epi = "Version: 0.1.2"
+    epi = "Version: 0.1.3"
     parser = argparse.ArgumentParser(
         description=msg,
         epilog=epi,
+    )
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="version",
+        version="%(prog)s 0.1.3",
     )
     subparsers = parser.add_subparsers(title="commands", dest="cmd")
 
