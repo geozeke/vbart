@@ -13,6 +13,7 @@ from typing import Union
 
 from vbart.constants import APPLICATION_NAME
 from vbart.constants import ARG_PARSERS_BASE
+from vbart.constants import VERSION
 
 # ======================================================================
 
@@ -49,7 +50,7 @@ def main() -> None:
 
     msg = """Volume Backup And Restoration Tool (for docker). A tool to
     easily backup and restore named docker volumes."""
-    epi = "Version: 0.1.3"
+    epi = f"Version: {VERSION}"
     parser = argparse.ArgumentParser(
         description=msg,
         epilog=epi,
@@ -58,7 +59,7 @@ def main() -> None:
         "-v",
         "--version",
         action="version",
-        version="%(prog)s 0.1.3",
+        version=f"{APPLICATION_NAME} {VERSION}",
     )
     msg = "For help on any command below, run: vbart {command} -h"
     subparsers = parser.add_subparsers(

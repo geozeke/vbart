@@ -16,3 +16,4 @@ ARG_PARSERS_BASE = HOME / "parsers"
 BASE_IMAGE = "alpine:latest"
 DOCKERFILE_PATH = HOME
 UTILITY_IMAGE = "vbart_utility"
+VERSION = "0.1.3"
