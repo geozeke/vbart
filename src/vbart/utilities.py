@@ -88,6 +88,7 @@ def verify_utility_image() -> None:
         if not alpine_already_present:
             client.images.remove(BASE_IMAGE)
         client.images.load(f.read())
+    print("Done")
     return
 
 

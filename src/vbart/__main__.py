@@ -34,7 +34,7 @@ def collect_parsers(start: Path) -> List[str]:
     parser_names: List[str] = []
     for p in start.iterdir():
         if p.is_file() and p.name != "__init__.py":
-            parser_names.append(f"parsers.{p.stem}")
+            parser_names.append(f"{APPLICATION_NAME}.parsers.{p.stem}")
     return parser_names
 
 
