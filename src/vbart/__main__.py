@@ -11,7 +11,7 @@ from types import ModuleType
 from typing import List
 from typing import Union
 
-from vbart.constants import APPLICATION_NAME
+from vbart.constants import APP_NAME
 from vbart.constants import ARG_PARSERS_BASE
 from vbart.constants import VERSION
 
@@ -34,7 +34,7 @@ def collect_parsers(start: Path) -> List[str]:
     parser_names: List[str] = []
     for p in start.iterdir():
         if p.is_file() and p.name != "__init__.py":
-            parser_names.append(f"{APPLICATION_NAME}.parsers.{p.stem}")
+            parser_names.append(f"{APP_NAME}.parsers.{p.stem}")
     return parser_names
 
 
@@ -59,7 +59,7 @@ def main() -> None:
         "-v",
         "--version",
         action="version",
-        version=f"{APPLICATION_NAME} {VERSION}",
+        version=f"{APP_NAME} {VERSION}",
     )
     msg = "For help on any command below, run: vbart {command} -h"
     subparsers = parser.add_subparsers(
@@ -90,9 +90,9 @@ def main() -> None:
 
     args = parser.parse_args()
     if args.cmd:
-        mod = importlib.import_module(f"{APPLICATION_NAME}.{args.cmd}")
+        mod = importlib.import_module(f"{APP_NAME}.{args.cmd}")
     else:
-        mod = importlib.import_module(f"{APPLICATION_NAME}.null")
+        mod = importlib.import_module(f"{APP_NAME}.null")
     mod.task_runner(args)
 
     return

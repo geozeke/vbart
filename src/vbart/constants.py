@@ -11,7 +11,7 @@ FAIL = f"{RED}\u2718{COLOR_END}"
 
 HOME = Path(__file__).parent
 
-APPLICATION_NAME = "vbart"
+APP_NAME = "vbart"
 ARG_PARSERS_BASE = HOME / "parsers"
 BASE_IMAGE = "alpine:latest"
 DOCKERFILE_PATH = HOME
