@@ -116,7 +116,7 @@ then there may be dangling docker containers that hang on to existing
 volumes. Running the refresh command will clear those dangling
 containers.
 
-Also, when you run vbart for the first time, it creates a small
+Also, when you run vbart for the first time it creates a small
 (alpine-based) docker image to perform the actual backups. This image is
 called `vbart_utility`. The refresh command also deletes the utility
 image, causing it to be recreated the next time you run vbart.
