@@ -127,5 +127,19 @@ To refresh vbart, use:
 vbart refresh
 ```
 
+### License
+
+This project is licensed under the MIT License. See the [LICENSE][def3]
+file for details.
+
+### Acknowledgements
+
+This project uses the [docker library][def5] which is licensed under the
+Apache 2.0 License. The full license text can be found in the
+[LICENSE-APACHE-2_0][def4] file.
+
 [def]: https://hub.docker.com/extensions/docker/volumes-backup-extension
 [def2]: https://pipx.pypa.io/stable/
+[def3]: ./LICENSE
+[def4]: ./LICENSE-APACHE-2_0
+[def5]: https://github.com/docker/docker-py
