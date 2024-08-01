@@ -1,6 +1,5 @@
 """Utilities to support docker volume backup/restore."""
 
-import os
 import tempfile as tf
 import textwrap
 from datetime import datetime as dt
@@ -43,17 +42,6 @@ def wrap_tight(msg: str, columns=70) -> str:
 # ======================================================================
 
 
-def clear() -> None:
-    """Clear the screen.
-
-    OS-agnostic version, which will work with both Windows and Linux.
-    """
-    os.system("clear" if os.name == "posix" else "cls")
-
-
-# ======================================================================
-
-
 def verify_utility_image() -> None:
     """Verify the backup utility image is in place.
 
@@ -75,9 +63,9 @@ def verify_utility_image() -> None:
 
     try:
         client.images.get(BASE_IMAGE)
-        alpine_present = True
+        alpine_already_present = True
     except errors.ImageNotFound:
-        alpine_present = False
+        alpine_already_present = False
 
     msg = "Building utility image (this is a one-time operation)..."
     print(f"{msg}", end="", flush=True)
@@ -92,15 +80,15 @@ def verify_utility_image() -> None:
     # standalone, meaning it won't need any parent image dependencies.
 
     utility_image = client.images.get(UTILITY_IMAGE)
-    with tf.TemporaryFile() as f:
+    with tf.TemporaryFile(mode="w+b") as f:
         for chunk in utility_image.save(named=True):  # type: ignore
             f.write(chunk)
         f.seek(0)
         client.images.remove(UTILITY_IMAGE)
-        if not alpine_present:
+        if not alpine_already_present:
             client.images.remove(BASE_IMAGE)
-        client.images.load(f)
-
+        client.images.load(f.read())
+    print("Done")
     return
 
 

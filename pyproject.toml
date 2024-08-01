@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "vbart"
-version = "0.1.2"
+version = "0.1.3"
 description = "Volume Backup And Restoration Tool for Docker"
 authors = ["Peter Nardi <pete@nardi.com>"]
 maintainers = ["Peter Nardi <pete@nardi.com>"]
 homepage = "https://github.com/geozeke/vbart"
 readme = "README.md"
 packages = [{ include = "vbart", from = "src" }]
-include = ["LICENSE"]
+include = ["LICENSE", "LICENSE-APACHE-2_0"]
 keywords = [
     "archive",
     "backup",

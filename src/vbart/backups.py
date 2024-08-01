@@ -6,7 +6,6 @@ import docker  # type:ignore
 
 from vbart.classes import Labels
 from vbart.utilities import backup_one_volume
-from vbart.utilities import clear
 from vbart.utilities import verify_utility_image
 from vbart.utilities import wrap_tight
 
@@ -20,7 +19,6 @@ def task_runner(args: argparse.Namespace) -> None:
         Command line arguments.
     """
     verify_utility_image()
-    clear()
     client = docker.from_env()
     active_names = [v.name for v in client.volumes.list()]  # type:ignore
 
