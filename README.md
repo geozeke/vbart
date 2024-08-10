@@ -140,6 +140,6 @@ Apache 2.0 License. The full license text can be found in the
 
 [def]: https://hub.docker.com/extensions/docker/volumes-backup-extension
 [def2]: https://pipx.pypa.io/stable/
-[def3]: ./LICENSE
-[def4]: ./LICENSE-APACHE-2_0
+[def3]: https://github.com/geozeke/vbart/blob/c87927233222bd5ac86a4a83083cc123e9fc0f9f/LICENSE
+[def4]: https://github.com/geozeke/vbart/blob/c87927233222bd5ac86a4a83083cc123e9fc0f9f/LICENSE-APACHE-2_0
 [def5]: https://github.com/docker/docker-py
