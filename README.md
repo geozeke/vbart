@@ -35,7 +35,7 @@ with friends, etc.
 
 ### Installation
 
-The preferred way to install vbart is with [pipx][def2]:
+Install it with [pipx][def2]:
 
 ```shell
 pipx install vbart
@@ -46,6 +46,12 @@ it the traditional way:
 
 ```shell
 pip3 install vbart
+```
+
+You can also install it with [uv][def6]:
+
+```shell
+uv tool install vbart
 ```
 
 ### Usage
@@ -143,3 +149,4 @@ Apache 2.0 License. The full license text can be found in the
 [def3]: https://github.com/geozeke/vbart/blob/c87927233222bd5ac86a4a83083cc123e9fc0f9f/LICENSE
 [def4]: https://github.com/geozeke/vbart/blob/c87927233222bd5ac86a4a83083cc123e9fc0f9f/LICENSE-APACHE-2_0
 [def5]: https://github.com/docker/docker-py
+[def6]: https://docs.astral.sh/uv

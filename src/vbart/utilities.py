@@ -126,7 +126,7 @@ def backup_one_volume(volume: str) -> str:
             image=UTILITY_IMAGE,
             command=cmd,
             remove=True,
-            volumes=volume_map,
+            volumes=volume_map,  # type:ignore
         )
         return PASS
     except errors.ContainerError:

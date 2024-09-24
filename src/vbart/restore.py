@@ -61,7 +61,7 @@ def task_runner(args: argparse.Namespace) -> None:
             image=UTILITY_IMAGE,
             command=shell_cmd,
             remove=True,
-            volumes=volume_map,
+            volumes=volume_map,  # type:ignore
         )
         print(PASS)
     except errors.ContainerError:
