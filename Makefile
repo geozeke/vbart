@@ -47,7 +47,7 @@ endif
 .PHONY: reset
 reset: clean ## remove venv, artifacts, and init directory
 	@echo Resetting project state
-	rm -rf .init .mypy_cache .venv
+	rm -rf .init .ruff_cache .mypy_cache .venv
 
 # --------------------------------------------
 
