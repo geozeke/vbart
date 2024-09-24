@@ -51,6 +51,20 @@ reset: clean ## remove venv, artifacts, and init directory
 
 # --------------------------------------------
 
+.PHONY: publish-production
+publish-production: ## publish package to pypi.org for production
+	uv publish  --publish-url https://upload.pypi.org/legacy/ \
+		--token ${PYPITOKEN}
+		
+# --------------------------------------------
+
+.PHONY: publish-test
+publish-test: ## publish package to test.pypi.org for testing
+	uv publish  --publish-url https://test.pypi.org/legacy/ \
+		--token ${TESTPYPITOKEN}
+
+# --------------------------------------------
+
 .PHONY: clean
 clean: ## cleanup python runtime and build artifacts
 	@echo Cleaning python runtime and build artifacts
