@@ -35,7 +35,7 @@ endif
 # --------------------------------------------
 
 .PHONY: upgrade
-upgrade: ## upgrade vbart dependencies
+upgrade: ## upgrade project dependencies
 ifeq (,$(wildcard .init/dev))
 	uv sync --no-dev --upgrade
 else
@@ -51,15 +51,22 @@ reset: clean ## remove venv, artifacts, and init directory
 
 # --------------------------------------------
 
+.PHONY: build
+build: ## build package for publishing
+	rm -rf dist
+	uv build
+
+# --------------------------------------------
+
 .PHONY: publish-production
-publish-production: ## publish package to pypi.org for production
+publish-production: build ## publish package to pypi.org for production
 	uv publish  --publish-url https://upload.pypi.org/legacy/ \
 		--token ${PYPITOKEN}
 		
 # --------------------------------------------
 
 .PHONY: publish-test
-publish-test: ## publish package to test.pypi.org for testing
+publish-test: build ## publish package to test.pypi.org for testing
 	uv publish  --publish-url https://test.pypi.org/legacy/ \
 		--token ${TESTPYPITOKEN}
 
