@@ -75,7 +75,6 @@ publish-test: build ## publish package to test.pypi.org for testing
 .PHONY: clean
 clean: ## cleanup python runtime and build artifacts
 	@echo Cleaning python runtime and build artifacts
-	@find . -type d -name __pycache__ -exec rm -rf {} \; -prune
 	@rm -rf build/
 	@rm -rf dist/
 	@find . -type d -name __pycache__ -exec rm -rf {} \; -prune
