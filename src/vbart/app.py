@@ -48,8 +48,10 @@ def main() -> None:
         print("\nYou must have docker installed to use vbart.\n")
         sys.exit(1)
 
-    msg = """Volume Backup And Restoration Tool (for docker). A tool to
-    easily backup and restore named docker volumes."""
+    msg = """
+    Volume Backup And Restoration Tool (for docker). A tool to easily
+    backup and restore named docker volumes.
+    """
     epi = f"Version: {VERSION}"
     parser = argparse.ArgumentParser(
         description=msg,
