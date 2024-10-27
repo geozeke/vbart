@@ -68,11 +68,11 @@ exclude = [
 [tool.ruff.lint.isort]
 force-single-line = true
 
-[tool.uv]
-dev-dependencies = [
-    "mypy>=1.11.2",
-    "ruff>=0.6.7",
-]
-
 [tool.uv.sources]
 vbart = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13.0",
+    "ruff>=0.7.1",
+]
