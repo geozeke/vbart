@@ -47,7 +47,7 @@ def task_runner(args: argparse.Namespace) -> None:
             msg = f"""None of the volume names listed in
             {args.volumes.name} are currently showing up as active
             docker volumes."""
-            print(f"\n{textwrap.fill(text=' '.join(msg.split()),width=60)}\n")
+            print(f"{textwrap.fill(text=' '.join(msg.split()),width=60)}")
         else:
             print("No active docker volumes found.")
 
