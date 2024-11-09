@@ -1,13 +1,13 @@
 """Perform backup of multiple volumes."""
 
 import argparse
+import textwrap
 
 import docker  # type:ignore
 
 from vbart.classes import Labels
 from vbart.utilities import backup_one_volume
 from vbart.utilities import verify_utility_image
-from vbart.utilities import wrap_tight
 
 
 def task_runner(args: argparse.Namespace) -> None:
@@ -47,7 +47,7 @@ def task_runner(args: argparse.Namespace) -> None:
             msg = f"""None of the volume names listed in
             {args.volumes.name} are currently showing up as active
             docker volumes."""
-            print(wrap_tight(msg=msg, columns=60))
+            print(f"\n{textwrap.fill(text=' '.join(msg.split()),width=60)}\n")
         else:
             print("No active docker volumes found.")
 

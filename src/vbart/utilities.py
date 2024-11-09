@@ -1,7 +1,6 @@
 """Utilities to support docker volume backup/restore."""
 
 import tempfile as tf
-import textwrap
 from datetime import datetime as dt
 from pathlib import Path
 
@@ -13,31 +12,6 @@ from vbart.constants import DOCKERFILE_PATH
 from vbart.constants import FAIL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
-
-# ======================================================================
-
-
-def wrap_tight(msg: str, columns=70) -> str:
-    """Clean up a multi-line docstring.
-
-    Take a multi-line docstring and wrap it cleanly as a paragraph to a
-    specified column width.
-
-    Parameters
-    ----------
-    msg : str
-        The docstring to be wrapped.
-    columns : int, optional
-        Column width for wrapping, by default 70.
-
-    Returns
-    -------
-    str
-        A wrapped paragraph.
-    """
-    clean = " ".join([t for token in msg.split("\n") if (t := token.strip())])
-    return textwrap.fill(clean, width=columns)
-
 
 # ======================================================================
 
