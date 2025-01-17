@@ -37,20 +37,20 @@ with friends, etc.
 
 Install it with [pipx][def2]:
 
-```shell
+```text
 pipx install vbart
 ```
 
 Alternatively, you can create a separate virtual environment and install
 it the traditional way:
 
-```shell
+```text
 pip3 install vbart
 ```
 
 You can also install it with [uv][def6]:
 
-```shell
+```text
 uv tool install vbart
 ```
 
@@ -58,19 +58,19 @@ uv tool install vbart
 
 For an overview, run:
 
-```shell
+```text
 vbart -h
 ```
 
 ### Backup a Single Volume
 
-```shell
+```text
 vbart backup volume_name
 ```
 
 For example, to backup a volume named `mysql_db`, use:
 
-```shell
+```text
 vbart backup mysql_db
 ```
 
@@ -83,7 +83,7 @@ YYYYMMDD-mysql_db-backup.xz
 
 ### Backup Multiple Volumes
 
-```shell
+```text
 vbart backups [-v VOLUMES]
 ```
 
@@ -103,7 +103,7 @@ YYYYMMDD-{volume_name}-backup.xz
 
 ### Restore a Single Volume
 
-```shell
+```text
 vbart restore backup_file volume_name
 ```
 
@@ -129,7 +129,7 @@ image, causing it to be recreated the next time you run vbart.
 
 To refresh vbart, use:
 
-```shell
+```text
 vbart refresh
 ```
 
