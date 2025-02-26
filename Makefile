@@ -5,14 +5,14 @@ all: help
 .PHONY: setup
 setup: ## setup project with runtime dependencies
 ifeq (,$(wildcard .init/setup))
-	@(which uv > /dev/null 2>&1) || \
-	(echo "vbart requires uv. See README for instructions."; exit 1)
-	@if [ ! -d "./scratch" ]; then \
-		mkdir -p scratch; \
+	@if ! command -v uv >/dev/null 2>&1; then \
+		echo "❌ Error: 'uv' is not installed. See README for instructions"; \
+		exit 1; \
 	fi
-	mkdir .init
+	mkdir -p scratch files run .init
 	touch .init/setup
 	uv sync --no-dev --frozen
+	@echo "✅ Setup complete!"
 else
 	@echo "Initial setup is already complete. If you are having issues, run:"
 	@echo
@@ -25,22 +25,28 @@ endif
 
 .PHONY: dev
 dev: ## add development dependencies (run make setup first)
-ifneq (,$(wildcard .init/setup))
+	@if [ ! -f ".init/setup" ]; then \
+		echo "❌ Error: Setup is required. Run 'make setup' first."; \
+		exit 1; \
+	fi
 	uv sync --frozen
 	@touch .init/dev
-else
-	@echo "Please run \"make setup\" first"
-endif
+	@echo "✅ Development dependencies installed!"
 
 # --------------------------------------------
 
 .PHONY: upgrade
 upgrade: ## upgrade project dependencies
-ifeq (,$(wildcard .init/dev))
-	uv sync --no-dev --upgrade
-else
-	uv sync --upgrade
-endif
+	@if [ ! -f ".init/setup" ]; then \
+		echo "❌ Error: Setup is required before upgrading. Run 'make setup' first."; \
+		exit 1; \
+	fi
+	@if [ -f ".init/dev" ]; then \
+		uv sync --upgrade; \
+	else \
+		uv sync --no-dev --upgrade; \
+	fi
+	@echo "✅ Dependencies upgraded!"
 
 # --------------------------------------------
 
@@ -60,13 +66,20 @@ build: ## build package for publishing
 
 .PHONY: publish-production
 publish-production: build ## publish package to pypi.org for production
-	uv publish  --publish-url https://upload.pypi.org/legacy/ \
-		--token ${PYPITOKEN}
-		
+	@if [ -z "${PYPITOKEN}" ]; then \
+		echo "❌ Error: PYPITOKEN is not set!"; \
+		exit 1; \
+	fi
+	uv publish --publish-url https://upload.pypi.org/legacy/ --token ${PYPITOKEN}
+
 # --------------------------------------------
 
 .PHONY: publish-test
 publish-test: build ## publish package to test.pypi.org for testing
+	@if [ -z "${TESTPYPITOKEN}" ]; then \
+		echo "❌ Error: TESTPYPITOKEN is not set!"; \
+		exit 1; \
+	fi
 	uv publish  --publish-url https://test.pypi.org/legacy/ \
 		--token ${TESTPYPITOKEN}
 
@@ -91,7 +104,9 @@ clean: ## cleanup python runtime and build artifacts
 
 .PHONY: help
 help: ## show help
-	@echo Please specify a target. Choices are:
+	@echo ""
+	@echo "🚀 Available Commands 🚀"
+	@echo "========================"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk \
 	'BEGIN {FS = ":.*?## "}; \
-	{printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	{printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
