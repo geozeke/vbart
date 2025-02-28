@@ -46,7 +46,6 @@ upgrade: ## upgrade project dependencies
 	else \
 		uv sync --no-dev --upgrade; \
 	fi
-	@echo "✅ Dependencies upgraded!"
 
 # --------------------------------------------
 
