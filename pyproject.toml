@@ -1,17 +1,12 @@
 [project]
 name = "vbart"
-version = "0.1.5"
+version = "0.1.6"
 description = "Volume Backup And Restoration Tool for Docker"
-license = {file = "LICENSE"}
-authors = [
-    {name = "Peter Nardi", email = "pete@nardi.com"},
-]
-maintainers = [
-    {name = "Peter Nardi", email = "pete@nardi.com"},
-]
-homepage = "https://github.com/geozeke/vbart"
-readme = {file = "README.md", content-type = "text/markdown"}
-requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "Peter Nardi", email = "pete@nardi.com" }]
+maintainers = [{ name = "Peter Nardi", email = "pete@nardi.com" }]
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.9"
 keywords = [
     "archive",
     "backup",
@@ -32,19 +27,17 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: System :: Archiving :: Backup",
     "Topic :: System :: Archiving :: Compression",
     "Topic :: Utilities",
 ]
-dependencies = [
-    "docker>=7.1.0",
-    "vbart",
-]
+dependencies = ["docker>=7.1.0", "vbart"]
 
 [project.urls]
 "Source Code" = "https://github.com/geozeke/vbart"
@@ -58,12 +51,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-exclude = [
-	"global-gitignore.txt",
-	"Makefile",
-    ".gitignore",
-    "uv.lock",
-]
+exclude = ["global-gitignore.txt", "Makefile", ".gitignore", "uv.lock"]
 
 [tool.ruff.lint.isort]
 force-single-line = true
@@ -72,7 +60,4 @@ force-single-line = true
 vbart = { workspace = true }
 
 [dependency-groups]
-dev = [
-    "mypy>=1.13.0",
-    "ruff>=0.7.1",
-]
+dev = ["mypy>=1.13.0", "ruff>=0.7.1"]
