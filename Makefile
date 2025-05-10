@@ -11,8 +11,8 @@ ifeq (,$(wildcard .init/setup))
 	fi
 	mkdir -p scratch files run .init
 	touch .init/setup
-	uv sync --no-dev --frozen
-	@echo "✅ Setup complete!"
+	uv sync --frozen --no-dev
+	@echo "✅ Setup complete."
 else
 	@echo "Initial setup is already complete. If you are having issues, run:"
 	@echo
@@ -29,9 +29,9 @@ dev: ## add development dependencies (run make setup first)
 		echo "❌ Error: Setup is required. Run 'make setup' first."; \
 		exit 1; \
 	fi
-	uv sync --frozen
+	uv sync --frozen --all-groups
 	@touch .init/dev
-	@echo "✅ Development dependencies installed!"
+	@echo "✅ Development dependencies installed."
 
 # --------------------------------------------
 
@@ -65,22 +65,17 @@ build: ## build package for publishing
 
 .PHONY: publish-production
 publish-production: build ## publish package to pypi.org for production
-	@if [ -z "${PYPITOKEN}" ]; then \
-		echo "❌ Error: PYPITOKEN is not set!"; \
-		exit 1; \
-	fi
-	uv publish --publish-url https://upload.pypi.org/legacy/ --token ${PYPITOKEN}
+	@set -a; eval "$$(grep '^PYPI_' $$HOME/.secrets)"; \
+	uv publish --publish-url https://upload.pypi.org/legacy/ \
+		--token "$$PYPI_PROD"
 
 # --------------------------------------------
 
 .PHONY: publish-test
 publish-test: build ## publish package to test.pypi.org for testing
-	@if [ -z "${TESTPYPITOKEN}" ]; then \
-		echo "❌ Error: TESTPYPITOKEN is not set!"; \
-		exit 1; \
-	fi
+	@set -a; eval "$$(grep '^PYPI_' $$HOME/.secrets)"; \
 	uv publish  --publish-url https://test.pypi.org/legacy/ \
-		--token ${TESTPYPITOKEN}
+		--token "$$PYPI_TEST"
 
 # --------------------------------------------
 
