@@ -1,6 +1,6 @@
 [project]
 name = "vbart"
-version = "0.1.6"
+version = "0.1.7"
 description = "Volume Backup And Restoration Tool for Docker"
 license = { file = "LICENSE" }
 authors = [{ name = "Peter Nardi", email = "pete@nardi.com" }]
