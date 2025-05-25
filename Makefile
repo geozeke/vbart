@@ -11,6 +11,8 @@ ifeq (,$(wildcard .init/setup))
 	fi
 	mkdir -p scratch files run .init
 	touch .init/setup
+	cp ./scripts/* ./run
+	find ./run -name '*.sh' -exec chmod 755 {} \;
 	uv sync --frozen --no-dev
 	@echo "✅ Setup complete."
 else
@@ -66,7 +68,7 @@ endif
 .PHONY: reset
 reset: clean ## remove venv, artifacts, and init directory
 	@echo Resetting project state
-	rm -rf .init .ruff_cache .mypy_cache .venv
+	rm -rf .init .ruff_cache .mypy_cache .venv run
 
 # --------------------------------------------
 
@@ -107,6 +109,12 @@ clean: ## cleanup python runtime and build artifacts
 	@find . -type f -name *.pyc -delete
 	@find . -type f -name *.pyo -delete
 	@find . -type f -name *.coverage -delete
+
+# --------------------------------------------
+
+.PHONY: tags
+tags: ## Update project tags
+	./run/release_tags.sh
 
 # --------------------------------------------
 
