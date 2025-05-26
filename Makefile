@@ -12,7 +12,7 @@ ifeq (,$(wildcard .init/setup))
 	mkdir -p scratch files run .init
 	touch .init/setup
 	cp ./scripts/* ./run
-	find ./run -name '*.sh' -exec chmod 754 {} \;
+	find ./run -name '*.sh' -exec chmod 744 {} \;
 	uv sync --frozen --no-dev
 	@echo "✅ Setup complete."
 else
@@ -27,27 +27,26 @@ endif
 
 .PHONY: dev
 dev: ## add development dependencies (run make setup first)
-	@if [ ! -f ".init/setup" ]; then \
-		echo "❌ Error: Setup is required. Run 'make setup' first."; \
-		exit 1; \
-	fi
-	uv sync --frozen --all-groups
+ifeq (,$(wildcard .init/setup))
+	@echo "Please run \"make setup\" first" ; exit 1
+endif
+	uv sync --all-groups --frozen
 	@touch .init/dev
-	@echo "✅ Development dependencies installed."
 
 # --------------------------------------------
 
 .PHONY: upgrade
-upgrade: ## upgrade project dependencies
-	@if [ ! -f ".init/setup" ]; then \
-		echo "❌ Error: Setup is required before upgrading. Run 'make setup' first."; \
-		exit 1; \
-	fi
-	@if [ -f ".init/dev" ]; then \
-		uv sync --upgrade --all-groups; \
-	else \
-		uv sync --upgrade --no-dev; \
-	fi
+upgrade: ## synchronize helper scripts and upgrade project dependencies
+ifeq (,$(wildcard .init/setup))
+	@echo "Please run \"make setup\" first" ; exit 1
+endif
+	cp -f ./scripts/* ./run
+	find ./run -name '*.sh' -exec chmod 744 {} \;
+ifeq (,$(wildcard .init/dev))
+	uv sync --upgrade --no-dev
+else
+	uv sync --upgrade --all-groups
+endif
 
 # --------------------------------------------
 
@@ -69,6 +68,12 @@ endif
 reset: clean ## remove venv, artifacts, and init directory
 	@echo Resetting project state
 	rm -rf .init .ruff_cache .mypy_cache .venv run
+
+# --------------------------------------------
+
+.PHONY: tags
+tags: ## Update project tags
+	./run/release_tags.sh
 
 # --------------------------------------------
 
@@ -109,12 +114,6 @@ clean: ## cleanup python runtime and build artifacts
 	@find . -type f -name *.pyc -delete
 	@find . -type f -name *.pyo -delete
 	@find . -type f -name *.coverage -delete
-
-# --------------------------------------------
-
-.PHONY: tags
-tags: ## Update project tags
-	./run/release_tags.sh
 
 # --------------------------------------------
 
