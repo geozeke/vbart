@@ -2,6 +2,14 @@
 
 <!--------------------------------------------------------------------->
 
+## [0.1.x][0.1.x] - 2025-xx-xx
+
+### Changed
+
+* [requests][requests] bumped `2.32.4`.
+
+<!--------------------------------------------------------------------->
+
 ## [0.1.7][0.1.7] - 2025-05-23
 
 ### Changed
@@ -28,3 +36,4 @@ _Initial Public Release._
 [0.1.6]: https://github.com/geozeke/parser201/releases/tag/v0.1.6
 [0.1.7]: https://github.com/geozeke/parser201/releases/tag/v0.1.7
 [issue5]: https://github.com/geozeke/vbart/issues/5
+[requests]: https://github.com/psf/requests
