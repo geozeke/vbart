@@ -6,6 +6,7 @@ import argparse
 import importlib
 import shutil
 import sys
+from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
 from typing import List
@@ -13,9 +14,10 @@ from typing import Union
 
 from vbart.constants import APP_NAME
 from vbart.constants import ARG_PARSERS_BASE
-from vbart.constants import VERSION
 
 # ======================================================================
+
+__version__ = version("vbart")
 
 
 def collect_parsers(start: Path) -> List[str]:
@@ -52,7 +54,7 @@ def main() -> None:
     Volume Backup And Restoration Tool (for docker). A tool to easily
     backup and restore named docker volumes.
     """
-    epi = f"Version: {VERSION}"
+    epi = f"Version: {__version__}"
     parser = argparse.ArgumentParser(
         description=msg,
         epilog=epi,
@@ -61,7 +63,7 @@ def main() -> None:
         "-v",
         "--version",
         action="version",
-        version=f"{APP_NAME} {VERSION}",
+        version=f"{APP_NAME} {__version__}",
     )
     msg = "For help on any command below, run: vbart {command} -h"
     subparsers = parser.add_subparsers(

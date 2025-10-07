@@ -1,6 +1,6 @@
 [project]
 name = "vbart"
-version = "0.1.7"
+version = "0.1.8"
 description = "Volume Backup And Restoration Tool for Docker"
 license = { file = "LICENSE" }
 authors = [{ name = "Peter Nardi", email = "pete@nardi.com" }]
@@ -47,17 +47,14 @@ dependencies = ["docker>=7.1.0", "vbart"]
 vbart = "vbart.app:main"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv-build>=0.1.0"]
+build-backend = "uv_build"
 
-[tool.hatch.build]
+[tool.uv.build-backend]
 exclude = ["global-gitignore.txt", "Makefile", ".gitignore", "uv.lock"]
 
 [tool.ruff.lint.isort]
 force-single-line = true
-
-[tool.uv.sources]
-vbart = { workspace = true }
 
 [dependency-groups]
 dev = ["mypy>=1.13.0", "ruff>=0.7.1"]

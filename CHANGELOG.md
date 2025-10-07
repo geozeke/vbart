@@ -2,10 +2,13 @@
 
 <!--------------------------------------------------------------------->
 
-## [0.1.x][0.1.x] - 2025-xx-xx
+## [0.1.8][0.1.8] - 2025-10-07
 
 ### Changed
 
+* Refactor version numbering.
+* Upgrade build backend from hatchling to uv_build.
+* Use standard emoji for PASS/FAIL.
 * [requests][requests] bumped `2.32.4`.
 
 <!--------------------------------------------------------------------->
@@ -35,5 +38,6 @@ _Initial Public Release._
 [0.1.5]: https://github.com/geozeke/parser201/releases/tag/v0.1.5
 [0.1.6]: https://github.com/geozeke/parser201/releases/tag/v0.1.6
 [0.1.7]: https://github.com/geozeke/parser201/releases/tag/v0.1.7
+[0.1.8]: https://github.com/geozeke/parser201/releases/tag/v0.1.8
 [issue5]: https://github.com/geozeke/vbart/issues/5
 [requests]: https://github.com/psf/requests
