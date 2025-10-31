@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "uv"
+    directory: /
+    schedule:
+      interval: weekly
+      day: "thursday"
+      time: "20:00"
+      timezone: "America/New_York"
+    ignore:
+      - dependency-name: "uv-build"
+    allow:
+      - dependency-type: "direct"

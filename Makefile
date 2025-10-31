@@ -77,6 +77,12 @@ tags: ## Update project tags
 
 # --------------------------------------------
 
+.PHONY: rebase
+rebase: ## re-baseline with the main branch
+	./run/rebaseline.sh
+
+# --------------------------------------------
+
 .PHONY: build
 build: ## build package for publishing
 	rm -rf dist
