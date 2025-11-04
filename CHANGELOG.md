@@ -4,9 +4,19 @@
 
 ## Next update
 
+### Development Dependency Updates
+
+* Bump ruff from 0.14.2 to 0.14.3 [#7][pull7]
+
+### Runtime Dependency Updates
+
 ### Changed
 
-* Bump ruff from 0.14.2 to 0.14.3
+### Added
+
+### Removed
+
+### Fixed
 
 <!--------------------------------------------------------------------->
 
@@ -48,4 +58,5 @@ _Initial Public Release._
 [0.1.7]: https://github.com/geozeke/parser201/releases/tag/v0.1.7
 [0.1.8]: https://github.com/geozeke/parser201/releases/tag/v0.1.8
 [issue5]: https://github.com/geozeke/vbart/issues/5
+[pull7]: https://github.com/geozeke/vbart/pull/7
 [requests]: https://github.com/psf/requests
