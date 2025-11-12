@@ -13,6 +13,7 @@ ifeq (,$(wildcard .init/setup))
 	touch .init/setup
 	cp ./scripts/* ./run
 	find ./run -name '*.sh' -exec chmod 744 {} \;
+	export UV_PYTHON_PREFERENCE=only-managed && \
 	uv sync --frozen --no-dev
 	@echo "✅ Setup complete."
 else
@@ -30,6 +31,7 @@ dev: ## add development dependencies (run make setup first)
 ifeq (,$(wildcard .init/setup))
 	@echo "Please run \"make setup\" first" ; exit 1
 endif
+	export UV_PYTHON_PREFERENCE=only-managed && \
 	uv sync --all-groups --frozen
 	@touch .init/dev
 

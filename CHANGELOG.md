@@ -15,6 +15,8 @@
 
 ### Added
 
+* Force uv sync to prefer managed python versions.
+
 ### Removed
 
 ### Fixed
