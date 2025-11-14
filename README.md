@@ -144,6 +144,8 @@ This project uses the [docker library][def5] which is licensed under the
 Apache 2.0 License. The full license text can be found in the
 [LICENSE-APACHE-2_0][def4] file.
 
+<!--------------------------------------------------------------------->
+
 [def]: https://hub.docker.com/extensions/docker/volumes-backup-extension
 [def2]: https://pipx.pypa.io/stable/
 [def3]: https://github.com/geozeke/vbart/blob/c87927233222bd5ac86a4a83083cc123e9fc0f9f/LICENSE
