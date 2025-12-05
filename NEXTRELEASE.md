@@ -1,5 +1,7 @@
 ### Development Dependency Updates
 
+* Bump ruff from 0.14.6 to 0.14.8 ([#11][pull11])
+* Bump mypy from 1.18.2 to 1.19.0 ([#12][pull12])
 * Bump ruff from 0.14.5 to 0.14.6 ([#10][pull10])
 * Bump ruff from 0.14.4 to 0.14.5 ([#9][pull9])
 * Bump ruff from 0.14.3 to 0.14.4 ([#8][pull8])
@@ -20,6 +22,8 @@
 <!--------------------------------------------------------------------->
 
 [pull10]: https://github.com/geozeke/vbart/pull/10
+[pull11]: https://github.com/geozeke/vbart/pull/11
+[pull12]: https://github.com/geozeke/vbart/pull/12
 [pull7]: https://github.com/geozeke/vbart/pull/7
 [pull8]: https://github.com/geozeke/vbart/pull/8
 [pull9]: https://github.com/geozeke/vbart/pull/9
