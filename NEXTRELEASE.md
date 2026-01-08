@@ -14,6 +14,8 @@
 
 ### Changed
 
+* Update copyright years on LICENSE.
+
 ### Added
 
 * Force uv sync to prefer managed python versions.
