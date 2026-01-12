@@ -1,0 +1,50 @@
+changelog:
+
+  sort: desc
+  
+  categories:
+
+    - title: "🚀 New Features"
+      labels:
+        - added
+        - feature
+        
+    - title: "🐛 Bug Fixes"
+      labels:
+        - fixed
+        - bug
+        - bugfix
+
+    - title: "🛠️ Changes"
+      labels:
+        - changed
+
+    - title: "👋 Deprecated"
+      labels:
+        - deprecated
+
+    - title: "🗑️ Removed"
+      labels:
+        - removed
+
+    - title: "🔐 Security Fixes"
+      labels:
+        - security
+
+    - title: "🏃‍♂️ Performance Improvements"
+      labels:
+        - performance
+
+    - title: "⬆️ Dependency Updates"
+      labels:
+        - dependencies
+
+    - title: "Other"
+      labels:
+        - other
+
+# Un-comment if certain labels need to be excluded from release notes
+  # exclude:
+  #   labels:
+  #     - skip-changelog
+  #     - dependencies

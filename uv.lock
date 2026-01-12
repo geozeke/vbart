@@ -427,7 +427,7 @@ wheels = [
 
 [[package]]
 name = "vbart"
-version = "0.1.9"
+version = "0.1.10"
 source = { editable = "." }
 dependencies = [
     { name = "docker" },
