@@ -2,7 +2,15 @@
 
 <!--------------------------------------------------------------------->
 
-## [0.1.9][0.1.9] - 2026-01-09 (latest)
+## 0.1.10 (2026-01-11) - latest
+
+### 🚀 New Features
+
+* Add release.yml for formatted release messages by @geozeke in <https://github.com/geozeke/vbart/pull/17>
+
+<!--------------------------------------------------------------------->
+
+## [0.1.9][0.1.9] - 2026-01-09
 
 ### Development Dependency Updates
 
