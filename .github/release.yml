@@ -35,7 +35,7 @@ changelog:
       labels:
         - performance
 
-    - title: "⬆️ Dependency Updates"
+    - title: "📦 Dependency Updates"
       labels:
         - dependencies
 
