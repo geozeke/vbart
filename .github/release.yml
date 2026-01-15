@@ -39,6 +39,10 @@ changelog:
       labels:
         - dependencies
 
+    - title: "📖 Documentation"
+      labels:
+        - docs
+
     - title: "Other"
       labels:
         - other
