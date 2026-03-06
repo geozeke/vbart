@@ -2,7 +2,34 @@
 
 <!--------------------------------------------------------------------->
 
-## 0.1.10 (2026-01-11) - latest
+## 0.2.0 (2026-03-06) - latest
+
+## ⛓️‍💥 BREAKING
+
+* This version drops support for python 3.9
+
+### 🚀 New Features
+
+* Add docs label to release.yml by @geozeke in <https://github.com/geozeke/vbart/pull/18>
+
+### 🐛 Bug Fixes
+
+* Pin upper bound for uv-build by @geozeke in <https://github.com/geozeke/vbart/pull/27>
+
+### 📦 Dependency Updates
+
+* Bump ruff from 0.14.11 to 0.14.13 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/19>
+* Bump ruff from 0.14.13 to 0.14.14 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/21>
+* Bump urllib3 from 2.5.0 to 2.6.3 in the uv group across 1 directory by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/20>
+* Bump ruff from 0.14.14 to 0.15.0 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/22>
+* Bump ruff from 0.15.0 to 0.15.1 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/23>
+* Bump ruff from 0.15.1 to 0.15.2 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/24>
+* Bump ruff from 0.15.2 to 0.15.4 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/25>
+* Bump ruff from 0.15.4 to 0.15.5 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/28>
+
+<!--------------------------------------------------------------------->
+
+## 0.1.10 (2026-01-11)
 
 ### 🚀 New Features
 
