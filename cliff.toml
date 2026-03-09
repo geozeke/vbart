@@ -70,14 +70,14 @@ commit_parsers = [
     { message = "^doc", group = "<!-- 4 -->📚 Documentation" },
     { message = "^feat|^feature", group = "<!-- 5 -->🚀 Features" },
     { message = "^chore|^ci", group = "<!-- 6 -->⚙️ Miscellaneous Tasks" },
-    { message = "^perf|^performance", group = "<!-- 8 -->🏃‍♂️ Performance improvements" },
+    { message = "^perf|^performance", group = "<!-- 8 -->🏃‍♂️ Performance Improvements" },
     { message = "^refactor", group = "<!-- 9 -->🚜 Refactor" },
     { message = "^revert", group = "<!-- 10 -->◀️ Revert" },
     { message = "^remove", group = "<!-- 11 -->🗑️ Removed" },
     { message = "^run|^runtime", group = "<!-- 12 -->📦 Runtime Dependencies" },
     # Checks both the message AND the body for "security"
-    { message = "^sec|^security", group = "<!-- 13 -->🔐 Security fixes" },
-    { body = ".*security", group = "<!-- 13 -->🔐 Security fixes" },
+    { message = "^sec|^security", group = "<!-- 13 -->🔐 Security Fixes" },
+    { body = ".*security", group = "<!-- 13 -->🔐 Security Fixes" },
     { message = "^style", group = "<!-- 14 -->🎨 Styling" },
     { message = "^test", group = "<!-- 15 -->🧪 Testing" },
     # Skip rules
