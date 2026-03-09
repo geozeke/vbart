@@ -6,26 +6,26 @@
 
 ## ⛓️‍💥 BREAKING
 
-* This version drops support for python 3.9
+- This version drops support for python 3.9
 
 ### 🚀 New Features
 
-* Add docs label to release.yml by @geozeke in <https://github.com/geozeke/vbart/pull/18>
+- Add docs label to release.yml by @geozeke in <https://github.com/geozeke/vbart/pull/18>
 
 ### 🐛 Bug Fixes
 
-* Pin upper bound for uv-build by @geozeke in <https://github.com/geozeke/vbart/pull/27>
+- Pin upper bound for uv-build by @geozeke in <https://github.com/geozeke/vbart/pull/27>
 
 ### 📦 Dependency Updates
 
-* Bump ruff from 0.14.11 to 0.14.13 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/19>
-* Bump ruff from 0.14.13 to 0.14.14 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/21>
-* Bump urllib3 from 2.5.0 to 2.6.3 in the uv group across 1 directory by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/20>
-* Bump ruff from 0.14.14 to 0.15.0 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/22>
-* Bump ruff from 0.15.0 to 0.15.1 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/23>
-* Bump ruff from 0.15.1 to 0.15.2 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/24>
-* Bump ruff from 0.15.2 to 0.15.4 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/25>
-* Bump ruff from 0.15.4 to 0.15.5 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/28>
+- Bump ruff from 0.14.11 to 0.14.13 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/19>
+- Bump ruff from 0.14.13 to 0.14.14 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/21>
+- Bump urllib3 from 2.5.0 to 2.6.3 in the uv group across 1 directory by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/20>
+- Bump ruff from 0.14.14 to 0.15.0 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/22>
+- Bump ruff from 0.15.0 to 0.15.1 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/23>
+- Bump ruff from 0.15.1 to 0.15.2 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/24>
+- Bump ruff from 0.15.2 to 0.15.4 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/25>
+- Bump ruff from 0.15.4 to 0.15.5 by @dependabot[bot] in <https://github.com/geozeke/vbart/pull/28>
 
 <!--------------------------------------------------------------------->
 
@@ -33,7 +33,7 @@
 
 ### 🚀 New Features
 
-* Add release.yml for formatted release messages by @geozeke in <https://github.com/geozeke/vbart/pull/17>
+- Add release.yml for formatted release messages by @geozeke in <https://github.com/geozeke/vbart/pull/17>
 
 <!--------------------------------------------------------------------->
 
@@ -41,24 +41,24 @@
 
 ### Development Dependency Updates
 
-* Bump ruff from 0.14.10 to 0.14.11 ([#16][pull16])
-* Bump ruff from 0.14.9 to 0.14.10 ([#14][pull14])
-* Bump mypy from 1.19.0 to 1.19.1 ([#15][pull15])
-* Bump ruff from 0.14.8 to 0.14.9 ([#13][pull13])
-* Bump ruff from 0.14.6 to 0.14.8 ([#11][pull11])
-* Bump mypy from 1.18.2 to 1.19.0 ([#12][pull12])
-* Bump ruff from 0.14.5 to 0.14.6 ([#10][pull10])
-* Bump ruff from 0.14.4 to 0.14.5 ([#9][pull9])
-* Bump ruff from 0.14.3 to 0.14.4 ([#8][pull8])
-* Bump ruff from 0.14.2 to 0.14.3 ([#7][pull7])
+- Bump ruff from 0.14.10 to 0.14.11 ([#16][pull16])
+- Bump ruff from 0.14.9 to 0.14.10 ([#14][pull14])
+- Bump mypy from 1.19.0 to 1.19.1 ([#15][pull15])
+- Bump ruff from 0.14.8 to 0.14.9 ([#13][pull13])
+- Bump ruff from 0.14.6 to 0.14.8 ([#11][pull11])
+- Bump mypy from 1.18.2 to 1.19.0 ([#12][pull12])
+- Bump ruff from 0.14.5 to 0.14.6 ([#10][pull10])
+- Bump ruff from 0.14.4 to 0.14.5 ([#9][pull9])
+- Bump ruff from 0.14.3 to 0.14.4 ([#8][pull8])
+- Bump ruff from 0.14.2 to 0.14.3 ([#7][pull7])
 
 ### Changed
 
-* Update copyright years on LICENSE.
+- Update copyright years on LICENSE.
 
 ### Added
 
-* Force uv sync to prefer managed python versions.
+- Force uv sync to prefer managed python versions.
 
 <!--------------------------------------------------------------------->
 
@@ -66,10 +66,10 @@
 
 ### Changed
 
-* Refactor version numbering.
-* Upgrade build backend from hatchling to uv_build.
-* Use standard emoji for PASS/FAIL.
-* [requests][requests] bumped `2.32.4`.
+- Refactor version numbering.
+- Upgrade build backend from hatchling to uv_build.
+- Use standard emoji for PASS/FAIL.
+- [requests][requests] bumped `2.32.4`.
 
 <!--------------------------------------------------------------------->
 
@@ -77,7 +77,7 @@
 
 ### Changed
 
-* Maintenance release to synchronize repository tags.
+- Maintenance release to synchronize repository tags.
 
 <!--------------------------------------------------------------------->
 
@@ -85,7 +85,7 @@
 
 ### Removed
 
-* Drop support for Python 3.8 ([#5][issue5])
+- Drop support for Python 3.8 ([#5][issue5])
 
 <!--------------------------------------------------------------------->
 
