@@ -128,6 +128,22 @@ publish-test: build
 
 # --------------------------------------------
 
+# Bump the project version and generate changelog
+bump version:
+    uv run run/bump.py {{version}}
+    just sync
+
+# --------------------------------------------
+
+# Commit, push changes, update tags
+commit:
+    git add .
+    git commit -m "Bump version"
+    git push origin main
+    just tags
+
+# --------------------------------------------
+
 # Generate release tags
 tags:
     ./run/release_tags.sh
