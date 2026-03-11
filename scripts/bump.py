@@ -31,14 +31,10 @@ def main() -> None:
         capture_output=True,
     )
 
-    # Reformat header
+    # Tag header of the new log as "latest"
     with open(UNRELEASED, "r") as f:
         new_log = [line.rstrip() for line in f]
-    header_parts = new_log[0].split()
-    header_ver = header_parts[1].replace("[", "")
-    header_ver = header_ver.replace("]", "")
-    date = f"({header_parts[-1]})"
-    new_log[0] = f"## {header_ver} {date} - latest"
+    new_log[0] = f"{new_log[0]} - latest"
 
     # Integrate it with the existing changelog
     with open(CHANGELOG, "r") as f:
