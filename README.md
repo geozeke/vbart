@@ -12,7 +12,7 @@
 <br>
 
 <img
-src="https://lh3.googleusercontent.com/d/1H04KVAA3ohH_dLXIrC0bXuJXDn3VutKc"
+src="https://lh3.googleusercontent.com/d/1wy0cTkF7O8BUOH_OVZYDo_PQEh7LJ_HE"
 alt = "Dinobox logo" width="120"/>
 
 ## Volume Backup And Restoration Tool for Docker
