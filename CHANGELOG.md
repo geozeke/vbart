@@ -2,7 +2,33 @@
 
 <!--------------------------------------------------------------------->
 
-## 0.2.0 (2026-03-06) - latest
+## 0.2.1 (2026-03-27) - latest
+
+### 🛠️ Changes
+
+- Migrate release generation to cliff (d92e459)
+
+### 📦 Runtime Dependencies
+
+- Bump requests from 2.32.5 to 2.33.0 in the uv group across 1 directory (c2bbcdd)
+
+### 🛠️ 📦 Development Dependencies
+
+- Bump ruff from 0.15.5 to 0.15.6 (50cb8dd)
+- Bump ruff from 0.15.6 to 0.15.7 (79b2d9f)
+- Bump ruff from 0.15.7 to 0.15.8 (f749dc7)
+- Bump upper bound for uv-build to 0.12 (54d9315)
+
+### 📚 Documentation
+
+- Lint CHANGELOG for markdown errors (338ee1f)
+- Lint config.toml (11dd55a)
+- Standardize changelog header format (d3ba640)
+- Update logo (70e5e34)
+
+<!--------------------------------------------------------------------->
+
+## 0.2.0 (2026-03-06)
 
 ## ⛓️‍💥 BREAKING
 
