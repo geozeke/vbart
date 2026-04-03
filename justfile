@@ -151,7 +151,7 @@ bump version:
 
 # Commit, push, update symantic version, EXCLUDE the "latest" tag
 commit:
-    just _commit false    
+    just _commit false
 
 # --------------------------------------------
 
