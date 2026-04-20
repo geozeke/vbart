@@ -3,12 +3,13 @@
 """CLI entry point for vbart."""
 
 import argparse
+import docker  # type:ignore
 import importlib
-import shutil
 import sys
 from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
+from docker import errors
 
 from vbart.constants import APP_NAME
 from vbart.constants import ARG_PARSERS_BASE
@@ -16,6 +17,7 @@ from vbart.constants import ARG_PARSERS_BASE
 # ======================================================================
 
 __version__ = version("vbart")
+COMMAND_ORDER = ["backup", "backups", "restore", "refresh"]
 
 
 def collect_parsers(start: Path) -> list[str]:
@@ -38,15 +40,34 @@ def collect_parsers(start: Path) -> list[str]:
     return parser_names
 
 
+def sort_parsers(parser_names: list[str]) -> list[str]:
+    """Sort parser modules in the desired CLI display order."""
+    order = {
+        f"{APP_NAME}.parsers.{name}_args": index
+        for index, name in enumerate(COMMAND_ORDER)
+    }
+    return sorted(
+        parser_names,
+        key=lambda name: (order.get(name, len(order)), name),
+    )
+
+
+def verify_docker_runtime() -> None:
+    """Exit if Docker is unavailable through the Python SDK."""
+    try:
+        client = docker.from_env()
+        client.ping()
+    except (errors.DockerException, OSError):
+        print("\nYou must have a working Docker runtime to use vbart.\n")
+        sys.exit(1)
+
+
 # ======================================================================
 
 
 def main() -> None:
     """Parse CLI arguments and dispatch the selected command."""
-    # Make sure docker is installed before going any further
-    if not (shutil.which("docker")):
-        print("\nYou must have docker installed to use vbart.\n")
-        sys.exit(1)
+    verify_docker_runtime()
 
     msg = """
     Back up and restore named Docker volumes.
@@ -71,13 +92,7 @@ def main() -> None:
 
     # Dynamically load argument subparsers.
 
-    parser_names: list[str] = []
-    parser_names = collect_parsers(ARG_PARSERS_BASE)
-    parser_names.sort()
-
-    # Argument parsers are saved in alphabetical order. This is a little
-    # slight-of-hand to get the desired order presented on screen.
-    parser_names[-1], parser_names[-2] = parser_names[-2], parser_names[-1]
+    parser_names = sort_parsers(collect_parsers(ARG_PARSERS_BASE))
 
     mod: ModuleType | None = None
     for p_name in parser_names:
