@@ -2,8 +2,8 @@
 name = "vbart"
 version = "0.2.1"
 description = "Volume Backup And Restoration Tool for Docker"
-license = "MIT AND Apache-2.0"
-license-files = ["LICEN[CS]E*"]
+license = "MIT"
+license-files = ["LICENSE", "LICENSE-APACHE-2_0"]
 authors = [{ name = "Peter Nardi", email = "geozeke@gmail.com" }]
 maintainers = [{ name = "Peter Nardi", email = "geozeke@gmail.com" }]
 readme = { file = "README.md", content-type = "text/markdown" }
