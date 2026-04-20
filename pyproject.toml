@@ -57,4 +57,4 @@ exclude = ["global-gitignore.txt", "Makefile", ".gitignore", "uv.lock"]
 force-single-line = true
 
 [dependency-groups]
-dev = ["mypy>=1.13.0", "ruff>=0.7.1"]
+dev = ["mypy>=1.13.0", "pytest>=8.4.2", "ruff>=0.7.1"]
