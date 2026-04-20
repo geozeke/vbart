@@ -1,8 +1,4 @@
-# Changelog
-
-<!--------------------------------------------------------------------->
-
-## 0.2.1 (2026-03-27) - latest
+## 0.2.1 (2026-03-27)
 
 ### 🛠️ Changes
 
@@ -26,8 +22,6 @@
 - Lint config.toml (11dd55a)
 - Standardize changelog header format (d3ba640)
 - Update logo (70e5e34)
-
-<!--------------------------------------------------------------------->
 
 ## 0.2.0 (2026-03-06)
 
@@ -65,16 +59,12 @@
 - Bump ruff from 0.15.4 to 0.15.5 by @dependabot[bot] in
   <https://github.com/geozeke/vbart/pull/28>
 
-<!--------------------------------------------------------------------->
-
 ## 0.1.10 (2026-01-11)
 
 ### 🚀 New Features
 
 - Add release.yml for formatted release messages by @geozeke in
   <https://github.com/geozeke/vbart/pull/17>
-
-<!--------------------------------------------------------------------->
 
 ## [0.1.9][0.1.9] - 2026-01-09
 
@@ -99,8 +89,6 @@
 
 - Force uv sync to prefer managed python versions.
 
-<!--------------------------------------------------------------------->
-
 ## [0.1.8][0.1.8] - 2025-10-07
 
 ### Changed
@@ -110,15 +98,11 @@
 - Use standard emoji for PASS/FAIL.
 - [requests][requests] bumped `2.32.4`.
 
-<!--------------------------------------------------------------------->
-
 ## [0.1.7][0.1.7] - 2025-05-23
 
 ### Changed
 
 - Maintenance release to synchronize repository tags.
-
-<!--------------------------------------------------------------------->
 
 ## [0.1.6][0.1.6] - 2025-03-06
 
@@ -126,13 +110,9 @@
 
 - Drop support for Python 3.8 ([#5][issue5])
 
-<!--------------------------------------------------------------------->
-
 ## [0.1.5][0.1.5] - 2024-11-15
 
 _Initial Public Release._
-
-<!--------------------------------------------------------------------->
 
 [0.1.5]: https://github.com/geozeke/parser201/releases/tag/v0.1.5
 [0.1.6]: https://github.com/geozeke/parser201/releases/tag/v0.1.6
