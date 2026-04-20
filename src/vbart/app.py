@@ -9,8 +9,6 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
-from typing import List
-from typing import Union
 
 from vbart.constants import APP_NAME
 from vbart.constants import ARG_PARSERS_BASE
@@ -20,7 +18,7 @@ from vbart.constants import ARG_PARSERS_BASE
 __version__ = version("vbart")
 
 
-def collect_parsers(start: Path) -> List[str]:
+def collect_parsers(start: Path) -> list[str]:
     """Collect argument parser module names.
 
     Parameters
@@ -33,7 +31,7 @@ def collect_parsers(start: Path) -> List[str]:
     list[str]
         Fully qualified parser module names.
     """
-    parser_names: List[str] = []
+    parser_names: list[str] = []
     for p in start.iterdir():
         if p.is_file() and p.name != "__init__.py":
             parser_names.append(f"{APP_NAME}.parsers.{p.stem}")
@@ -73,7 +71,7 @@ def main() -> None:
 
     # Dynamically load argument subparsers.
 
-    parser_names: List[str] = []
+    parser_names: list[str] = []
     parser_names = collect_parsers(ARG_PARSERS_BASE)
     parser_names.sort()
 
@@ -81,7 +79,7 @@ def main() -> None:
     # slight-of-hand to get the desired order presented on screen.
     parser_names[-1], parser_names[-2] = parser_names[-2], parser_names[-1]
 
-    mod: Union[ModuleType, None] = None
+    mod: ModuleType | None = None
     for p_name in parser_names:
         mod = importlib.import_module(p_name)
         mod.load_command_args(subparsers)
