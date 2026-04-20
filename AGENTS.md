@@ -28,7 +28,7 @@ restoring Docker named volumes.
   `.pytest_cache/`, `.mypy_cache/`, `.ruff_cache/`, `__pycache__/`,
   or `.cache/` unless the task explicitly requires it.
 - Prefer reading `README.md`, `pyproject.toml`, and files under
-  `src/smvp/` first.
+  `src/vbart/` first.
 - Use `rg` for searches and `just` or `uv` for common project tasks when
   needed.
 - Prefer `pathlib.Path` objects over raw path strings where
