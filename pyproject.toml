@@ -56,5 +56,16 @@ exclude = ["global-gitignore.txt", "Makefile", ".gitignore", "uv.lock"]
 [tool.ruff.lint.isort]
 force-single-line = true
 
+[tool.coverage.run]
+branch = true
+source = ["src/vbart"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "if __name__ == .__main__.:",
+]
+
 [dependency-groups]
-dev = ["mypy>=1.13.0", "pytest>=8.4.2", "ruff>=0.7.1"]
+dev = ["mypy>=1.13.0", "pytest>=8.4.2", "pytest-cov>=7.0.0", "ruff>=0.7.1"]

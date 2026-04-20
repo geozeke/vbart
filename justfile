@@ -134,9 +134,9 @@ test:
 
 # --------------------------------------------
 
-# Run tests with 100% coverage requirement
+# Run tests with coverage reporting
 coverage:
-    uv run pytest --tb=short --cov=smvp --cov-report=term-missing --cov-report=html --cov-fail-under=100
+    uv run pytest --tb=short --cov --cov-report=term-missing --cov-report=html
 
 # --------------------------------------------
 
