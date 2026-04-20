@@ -18,8 +18,9 @@ alt = "Dinobox logo" width="120"/>
 ## Volume Backup And Restoration Tool for Docker
 
 Backing up named Docker volumes can be awkward. There is an
-[extension][def] for Docker Desktop, but vbart is a simple, easy-to-use
-command-line tool for backing up and restoring named Docker volumes.
+[extension][def] for Docker Desktop, but vbart is a simple,
+easy-to-use command-line tool for backing up and restoring named
+Docker volumes.
 
 With vbart, you can:
 
@@ -91,9 +92,9 @@ sensitive volume names, one per line, that you want to back up. Within
 `VOLUMES`, blank lines and lines beginning with `#` are ignored, so you
 can comment the file if you wish.
 
-If `VOLUMES` is not specified, all active Docker volumes on the current
-host are backed up. All volume backups are saved in the current working
-directory and named:
+If `VOLUMES` is not specified, all active Docker volumes on the
+current host are backed up. All volume backups are saved in the
+current working directory and named:
 
 ```text
 YYYYMMDD-{volume_name}-backup.xz
