@@ -8,7 +8,6 @@ import docker  # type:ignore
 from docker import errors
 
 from vbart.constants import BASE_IMAGE
-from vbart.constants import DOCKERFILE_PATH
 from vbart.constants import FAIL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
@@ -43,12 +42,15 @@ def verify_utility_image() -> None:
 
     msg = "Building utility image (this is a one-time operation)..."
     print(f"{msg}", end="", flush=True)
-    client.images.build(
-        path=str(DOCKERFILE_PATH),
-        tag=f"{UTILITY_IMAGE}:latest",
-        nocache=True,
-        rm=True,
-    )
+    with tf.TemporaryDirectory() as build_dir:
+        dockerfile_path = Path(build_dir) / "Dockerfile"
+        dockerfile_path.write_text(render_helper_dockerfile(), encoding="utf-8")
+        client.images.build(
+            path=build_dir,
+            tag=f"{UTILITY_IMAGE}:latest",
+            nocache=True,
+            rm=True,
+        )
 
     # Saving and reloading the image flattens it so it will operate
     # standalone, meaning it won't need any parent image dependencies.
@@ -64,6 +66,19 @@ def verify_utility_image() -> None:
         client.images.load(f.read())
     print("Done")
     return
+
+
+# ======================================================================
+
+
+def render_helper_dockerfile() -> str:
+    """Render the helper-image Dockerfile from runtime constants."""
+    return (
+        f"FROM {BASE_IMAGE}\n"
+        "RUN apk -U upgrade\n"
+        "# Add support for xz compression\n"
+        "RUN apk add --no-cache xz\n"
+    )
 
 
 # ======================================================================

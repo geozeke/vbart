@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 from docker import errors
@@ -10,7 +11,6 @@ from tests.conftest import FakeContainers
 from tests.conftest import FakeImages
 from tests.conftest import FakeSavedImage
 from vbart.constants import BASE_IMAGE
-from vbart.constants import DOCKERFILE_PATH
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
 from vbart import utilities
@@ -37,6 +37,7 @@ def test_verify_utility_image_returns_when_image_exists(
 def test_verify_utility_image_builds_and_flattens_helper_image(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
 ) -> None:
     images = FakeImages(
         existing={
@@ -55,17 +56,31 @@ def test_verify_utility_image_builds_and_flattens_helper_image(
 
     monkeypatch.setattr(images, "get", get)
     monkeypatch.setattr(utilities.docker, "from_env", lambda: client)
+    monkeypatch.setattr(
+        utilities,
+        "render_helper_dockerfile",
+        lambda: "FROM alpine:3.23\nRUN echo hello\n",
+    )
+    build_dir = tmp_path / "build-context"
+    build_dir.mkdir()
+
+    class FakeTemporaryDirectory:
+        def __enter__(self) -> str:
+            return str(build_dir)
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+    monkeypatch.setattr(utilities.tf, "TemporaryDirectory", FakeTemporaryDirectory)
 
     utilities.verify_utility_image()
 
-    assert images.build_calls == [
-        {
-            "path": str(DOCKERFILE_PATH),
-            "tag": f"{UTILITY_IMAGE}:latest",
-            "nocache": True,
-            "rm": True,
-        }
-    ]
+    build_call = images.build_calls[0]
+    assert build_call["tag"] == f"{UTILITY_IMAGE}:latest"
+    assert build_call["nocache"] is True
+    assert build_call["rm"] is True
+    dockerfile_path = build_dir / "Dockerfile"
+    assert dockerfile_path.read_text(encoding="utf-8") == "FROM alpine:3.23\nRUN echo hello\n"
     assert images.remove_calls == [UTILITY_IMAGE]
     assert images.load_calls == [b"chunk1chunk2"]
     assert capsys.readouterr().out == "Building utility image (this is a one-time operation)...Done\n"
@@ -88,10 +103,22 @@ def test_verify_utility_image_removes_pulled_base_image(
 
     monkeypatch.setattr(images, "get", get)
     monkeypatch.setattr(utilities.docker, "from_env", lambda: client)
+    monkeypatch.setattr(
+        utilities,
+        "render_helper_dockerfile",
+        lambda: "FROM alpine:3.23\n",
+    )
 
     utilities.verify_utility_image()
 
     assert images.remove_calls == [UTILITY_IMAGE, BASE_IMAGE]
+
+
+def test_render_helper_dockerfile_uses_base_image_constant() -> None:
+    dockerfile = utilities.render_helper_dockerfile()
+
+    assert dockerfile.startswith("FROM alpine:3.23\n")
+    assert "apk add --no-cache xz" in dockerfile
 
 
 def test_backup_one_volume_builds_expected_command(

@@ -5,10 +5,7 @@ from pathlib import Path
 PASS = "✅"
 FAIL = "❌"
 
-HOME = Path(__file__).parent
-
 APP_NAME = "vbart"
-ARG_PARSERS_BASE = HOME / "parsers"
-BASE_IMAGE = "alpine:latest"
-DOCKERFILE_PATH = HOME
+ARG_PARSERS_BASE = Path(__file__).parent / "parsers"
+BASE_IMAGE = "alpine:3.23"
 UTILITY_IMAGE = "vbart_utility"
