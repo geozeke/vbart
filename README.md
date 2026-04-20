@@ -17,21 +17,19 @@ alt = "Dinobox logo" width="120"/>
 
 ## Volume Backup And Restoration Tool for Docker
 
-Why is backing up named docker volumes so hard? There's an
-[extension][def] for Docker Desktop, but I just want a simple,
-easy-to-use command line tool that allows me to backup and restore my
-named docker volumes. That's what vbart does.
+Backing up named Docker volumes can be awkward. There is an
+[extension][def] for Docker Desktop, but vbart is a simple, easy-to-use
+command-line tool for backing up and restoring named Docker volumes.
 
-With vbart you can:
+With vbart, you can:
 
 * Backup a single named volume.
 * Backup all active named volumes on your host.
 * Backup just the volumes you list in a separate file.
 * Restore a single backup to a named volume.
 
-All backups are stored in compressed (xz) tar archives. Once you create
-a backup, you can copy it off-host, install it on another machine, share
-with friends, etc.
+All backups are stored as compressed `xz` tar archives. Once you create
+a backup, you can copy it off-host or restore it on another machine.
 
 ### Installation
 
@@ -68,7 +66,7 @@ vbart -h
 vbart backup volume_name
 ```
 
-For example, to backup a volume named `mysql_db`, use:
+For example, to back up a volume named `mysql_db`, use:
 
 ```text
 vbart backup mysql_db
@@ -88,14 +86,14 @@ vbart backups [-v VOLUMES]
 ```
 
 Note the plural command name (`backups` as opposed to `backup`).
-`VOLUMES` is the optional name of a textfile that contains case
-sensitive volume names (one per line) that you want to backup. Within
-`VOLUMES` blank lines and lines beginning with `#` are ignored, so you
+`VOLUMES` is the optional name of a text file that contains case-
+sensitive volume names, one per line, that you want to back up. Within
+`VOLUMES`, blank lines and lines beginning with `#` are ignored, so you
 can comment the file if you wish.
 
-If `VOLUMES` is not specified, all active docker volumes on the current
+If `VOLUMES` is not specified, all active Docker volumes on the current
 host are backed up. All volume backups are saved in the current working
-directory and named as:
+directory and named:
 
 ```text
 YYYYMMDD-{volume_name}-backup.xz
@@ -117,13 +115,13 @@ given name and the backup will be restored to that volume.
 
 ### Refresh vbart
 
-If vbart is interrupted during execution (e.g. hitting `Control+C`),
-then there may be dangling docker containers that hang on to existing
-volumes. Running the refresh command will clear those dangling
+If vbart is interrupted during execution, for example by pressing
+`Ctrl+C`, there may be dangling Docker containers that still reference
+existing volumes. Running the refresh command will clear those dangling
 containers.
 
-Also, when you run vbart for the first time it creates a small
-(alpine-based) docker image to perform the actual backups. This image is
+Also, when you run vbart for the first time, it creates a small
+Alpine-based Docker image to perform the actual backups. This image is
 called `vbart_utility`. The refresh command also deletes the utility
 image, causing it to be recreated the next time you run vbart.
 
