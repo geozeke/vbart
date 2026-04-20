@@ -37,7 +37,7 @@ classifiers = [
     "Topic :: System :: Archiving :: Compression",
     "Topic :: Utilities",
 ]
-dependencies = ["docker>=7.1.0", "vbart"]
+dependencies = ["docker>=7.1.0"]
 
 [project.urls]
 "Source Code" = "https://github.com/geozeke/vbart"
