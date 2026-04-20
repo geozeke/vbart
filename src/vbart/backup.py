@@ -1,4 +1,4 @@
-"""Perform single volume backup."""
+"""Command handler for backing up a single Docker volume."""
 
 import argparse
 import sys
@@ -12,12 +12,12 @@ from vbart.utilities import verify_utility_image
 
 
 def task_runner(args: argparse.Namespace) -> None:
-    """Backup a single named docker volume.
+    """Back up a single named Docker volume.
 
     Parameters
     ----------
     args : Namespace
-        Command line arguments.
+        Parsed command-line arguments.
     """
     verify_utility_image()
     client = docker.from_env()

@@ -1,4 +1,4 @@
-"""Constants."""
+"""Package-level constants used by vbart."""
 
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-"""Utilities to support docker volume backup/restore."""
+"""Utilities for backing up and restoring Docker volumes."""
 
 import tempfile as tf
 from datetime import datetime as dt
@@ -17,10 +17,10 @@ from vbart.constants import UTILITY_IMAGE
 
 
 def verify_utility_image() -> None:
-    """Verify the backup utility image is in place.
+    """Ensure that the helper image is available.
 
-    If the utility image is not present, then build it. Also delete any
-    interim build products (images) that were created.
+    If the helper image is missing, build it and remove any temporary
+    image dependencies created during the build.
     """
     # NOTE: The python docker package is not typed, so you'll see lots
     # of "type: ignore" hashtags sprinkled throughout.
@@ -70,18 +70,17 @@ def verify_utility_image() -> None:
 
 
 def backup_one_volume(volume: str) -> str:
-    """Perform a backup on a single named volume.
+    """Back up a single named volume.
 
     Parameters
     ----------
     volume : str
-        The name of the volume to backup
+        Name of the volume to back up.
 
     Returns
     -------
     str
-        Return either PASS or FAIL, depending on the result of the
-        backup.
+        ``PASS`` if the backup succeeds, otherwise ``FAIL``.
     """
     client = docker.from_env()
     now = dt.now()

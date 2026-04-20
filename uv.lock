@@ -637,10 +637,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "docker", specifier = ">=7.1.0" },
-    { name = "vbart" },
-]
+requires-dist = [{ name = "docker", specifier = ">=7.1.0" }]
 
 [package.metadata.requires-dev]
 dev = [

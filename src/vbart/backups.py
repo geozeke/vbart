@@ -1,4 +1,4 @@
-"""Perform backup of multiple volumes."""
+"""Command handler for backing up multiple Docker volumes."""
 
 import argparse
 import textwrap
@@ -11,12 +11,12 @@ from vbart.utilities import verify_utility_image
 
 
 def task_runner(args: argparse.Namespace) -> None:
-    """Backup multiple docker volumes.
+    """Back up multiple Docker volumes.
 
     Parameters
     ----------
     args : Namespace
-        Command line arguments.
+        Parsed command-line arguments.
     """
     verify_utility_image()
     client = docker.from_env()

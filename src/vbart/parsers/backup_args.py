@@ -1,4 +1,4 @@
-"""Backup argparser."""
+"""Argument parser for the ``backup`` command."""
 
 from argparse import _SubParsersAction
 
@@ -6,7 +6,7 @@ COMMAND_NAME = "backup"
 
 
 def load_command_args(sp: _SubParsersAction) -> None:
-    """Assemble the argument parser."""
+    """Register command-line arguments for ``backup``."""
     msg = """Back up a single named Docker volume."""
     parser = sp.add_parser(
         name=COMMAND_NAME,

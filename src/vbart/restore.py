@@ -1,4 +1,4 @@
-"""Perform volume restoration."""
+"""Command handler for restoring a Docker volume from a backup."""
 
 import argparse
 import sys
@@ -15,12 +15,12 @@ from vbart.utilities import verify_utility_image
 
 
 def task_runner(args: argparse.Namespace) -> None:
-    """Restore a backup to a docker volume.
+    """Restore a backup archive to a Docker volume.
 
     Parameters
     ----------
     args : Namespace
-        Command line arguments.
+        Parsed command-line arguments.
     """
     verify_utility_image()
     client = docker.from_env()

@@ -1,13 +1,12 @@
-"""Taskrunner for no command.
+"""Fallback handler when no subcommand is provided.
 
-This will be the default command, which reminds the user how to use the
-program, then exits.
+This module prints a short usage reminder and exits.
 """
 
 import argparse
 
 
 def task_runner(args: argparse.Namespace) -> None:
-    """Print reminder message and exit."""
+    """Print a usage reminder."""
     print("run 'vbart -h' for help.")
     return

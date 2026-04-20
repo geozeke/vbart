@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Entry point for vbart."""
+"""CLI entry point for vbart."""
 
 import argparse
 import importlib
@@ -21,17 +21,17 @@ __version__ = version("vbart")
 
 
 def collect_parsers(start: Path) -> List[str]:
-    """Collect the module names of all argument parsers to import.
+    """Collect argument parser module names.
 
     Parameters
     ----------
     start : Path
-        This the starting point (directory) for collection.
+        Directory containing the parser modules to import.
 
     Returns
     -------
     list[str]
-        A list of argument parser module names.
+        Fully qualified parser module names.
     """
     parser_names: List[str] = []
     for p in start.iterdir():
@@ -44,7 +44,7 @@ def collect_parsers(start: Path) -> List[str]:
 
 
 def main() -> None:
-    """Get user input and perform backup and restore operations."""
+    """Parse CLI arguments and dispatch the selected command."""
     # Make sure docker is installed before going any further
     if not (shutil.which("docker")):
         print("\nYou must have docker installed to use vbart.\n")
