@@ -50,6 +50,7 @@ split_commits = false
 # An array of regex based parsers to modify commit messages prior to
 # further processing.
 commit_preprocessors = [
+    { pattern = '^bug:', replace = "fix:" },
     # Replace issue numbers with link templates to be updated in `changelog.postprocessors`.
     #{ pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](<REPO>/issues/${2}))"},
     # Check spelling of the commit message using https://github.com/crate-ci/typos.
@@ -63,7 +64,7 @@ protect_breaking_commits = false
 # message. Assigns commits to groups. Optionally sets the commit's scope
 # and can decide to exclude commits from further processing.
 commit_parsers = [
-    { message = "^fix", group = "<!-- 0 -->🐛 Bug Fixes" },
+    { message = "^fix|^bug", group = "<!-- 0 -->🐛 Bug Fixes" },
     { message = "^change", group = "<!-- 1 -->🛠️ Changes" },
     { message = "^dep|^deprecate", group = "<!-- 2 -->👋 Deprecated" },
     { message = "^dev", group = "<!-- 3 -->🛠️ 📦 Development Dependencies" },
@@ -95,6 +96,8 @@ fail_on_unmatched_commit = false
 link_parsers = []
 # Include only the tags that belong to the current branch.
 use_branch_tags = false
+# Ignore non-version tags used for convenience.
+ignore_tags = "latest"
 # Order releases topologically instead of chronologically.
 topo_order = false
 # Order commits topologically instead of chronologically.

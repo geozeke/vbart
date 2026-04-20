@@ -5,18 +5,44 @@ project_name := "vbart"
 default: help
 
 # --------------------------------------------
+_display_webpage web_path:
+    #!/usr/bin/env python3
+    import webbrowser
+    from pathlib import Path
+    p = Path(".").resolve()/"{{web_path}}"
+    if not p.exists():
+        raise SystemExit(f"File not found: {p}")
+    url = f"file://{p}"
+    print(f"Coverage report: {url}")
+    webbrowser.open(url, new=2)
+
+# --------------------------------------------
+
+# Require initial setup to be complete
+_require_setup:
+    #!/usr/bin/env bash
+    if [ ! -f .init/setup ]; then
+        echo 'Please run "just setup" first'
+        exit 1
+    fi
+
+# --------------------------------------------
 
 # Private handler for commits
 _commit latest:
     #!/usr/bin/env bash
-    git add .
+    git add --update CHANGELOG.md pyproject.toml uv.lock
+    if git diff --cached --quiet; then
+        echo "No release changes found in CHANGELOG.md, pyproject.toml, or uv.lock."
+        exit 1
+    fi
     git commit -m "Bump version"
-    git push origin main
     if [[ "{{latest}}" == "true" ]]; then
         ./run/release_tags.sh --latest
     else
         ./run/release_tags.sh
     fi
+    git push origin main
 
 # --------------------------------------------
 
@@ -30,7 +56,7 @@ setup:
         fi
         mkdir -p scratch .init run
         touch .init/setup
-        cp ./scripts/* ./run
+        cp ./scripts/*.sh ./run
         find ./run -name '*.sh' -exec chmod 744 {} \;
         export UV_PYTHON_PREFERENCE=only-managed
         uv sync --frozen --no-dev
@@ -45,12 +71,8 @@ setup:
 # --------------------------------------------
 
 # Provision development dependencies
-dev:
+dev: _require_setup
     #!/usr/bin/env bash
-    if [ ! -f .init/setup ]; then
-        echo 'Please run "just setup" first'
-        exit 1
-    fi
     export UV_PYTHON_PREFERENCE=only-managed
     uv sync --all-groups --frozen
     touch .init/dev
@@ -58,14 +80,9 @@ dev:
 # --------------------------------------------
 
 # Upgrade dependencies
-upgrade:
+upgrade: _require_setup
     #!/usr/bin/env bash
-    if [ ! -f .init/setup ]; then
-        echo 'Please run "just setup" first'
-        exit 1
-    fi
-
-    cp -f ./scripts/* ./run
+    cp -f ./scripts/*.sh ./run
     find ./run -name '*.sh' -exec chmod 744 {} \;
 
     if [ -f .init/dev ]; then
@@ -77,17 +94,12 @@ upgrade:
 # --------------------------------------------
 
 # Sync dependencies with the lockfile (frozen)
-sync:
+sync: _require_setup
     #!/usr/bin/env bash
-    if [ ! -f .init/setup ]; then
-        echo 'Please run "just setup" first'
-        exit 1
-    fi
-
     if [ -f .init/dev ]; then
-        uv sync --all-groups
+        uv sync --all-groups --frozen
     else
-        uv sync --no-dev
+        uv sync --no-dev --frozen
     fi
 
 # --------------------------------------------
@@ -95,8 +107,7 @@ sync:
 # Clean python runtime and build artifacts
 clean:
     echo "Cleaning python runtime and build artifacts"
-    rm -rf build/
-    rm -rf dist/
+    rm -rf build dist .*cache htmlcov
     find . -type d -name __pycache__ -exec rm -rf {} \; -prune
     find . -type d -name .ipynb_checkpoints -exec rm -rf {} \; -prune
     find . -type d -name .pytest_cache -exec rm -rf {} \; -prune
@@ -117,18 +128,54 @@ reset: clean
 
 # --------------------------------------------
 
+# Run pytest with --tb=short option
+test:
+    uv run pytest --tb=short
+
+# --------------------------------------------
+
+# Run tests with 100% coverage requirement
+coverage:
+    uv run pytest --tb=short --cov=smvp --cov-report=term-missing --cov-report=html --cov-fail-under=100
+
+# --------------------------------------------
+
+# Run coverage and open HTML report in browser
+coverage-open: coverage
+    just _display_webpage "htmlcov/index.html"
+
+# --------------------------------------------
+
+# Run lint checks
+lint:
+    uv run ruff check .
+
+# --------------------------------------------
+
+# Run static type checks
+typecheck:
+    uv run mypy src
+
+# --------------------------------------------
+
 # Build package for publishing
-build: 
-	rm -rf dist
-	uv build
+build:
+    rm -rf dist
+    uv build
 
 # --------------------------------------------
 
 # Publish package to pypi.org for production
 publish-production: build
     #!/usr/bin/env bash
+    if [ ! -f "$HOME/.secrets" ]; then
+        echo 'Missing "$HOME/.secrets"'
+        exit 1
+    fi
     set -a
-    eval $(grep '^PYPI_' "$HOME/.secrets")
+    . "$HOME/.secrets"
+    set +a
+    : "${PYPI_PROD:?Missing PYPI_PROD in $HOME/.secrets}"
     uv publish --publish-url https://upload.pypi.org/legacy/ -t "$PYPI_PROD"
 
 # --------------------------------------------
@@ -136,26 +183,53 @@ publish-production: build
 # Publish package to test.pypi.org for testing
 publish-test: build
     #!/usr/bin/env bash
+    if [ ! -f "$HOME/.secrets" ]; then
+        echo 'Missing "$HOME/.secrets"'
+        exit 1
+    fi
     set -a
-    eval $(grep '^PYPI_' "$HOME/.secrets")
+    . "$HOME/.secrets"
+    set +a
+    : "${PYPI_TEST:?Missing PYPI_TEST in $HOME/.secrets}"
     uv publish --publish-url https://test.pypi.org/legacy/ -t "$PYPI_TEST"
 
 # --------------------------------------------
 
 # Bump the project version and generate changelog
 bump version:
-    uv run run/bump.py {{version}}
+    #!/usr/bin/env bash
+    new_version="{{version}}"
+    new_version="${new_version#v}"
+    git cliff --unreleased --tag "$new_version" --prepend CHANGELOG.md
+    tmp_changelog="$(mktemp)"
+    awk '
+        NR == 1 { print; prev = $0; next }
+        /^## / && prev !~ /^[[:space:]]*$/ { print "" }
+        { print; prev = $0 }
+    ' CHANGELOG.md > "$tmp_changelog"
+    mv "$tmp_changelog" CHANGELOG.md
+    tmp_file="$(mktemp)"
+    awk -v version="$new_version" '
+        BEGIN { replaced = 0 }
+        /^version = "/ && !replaced {
+            print "version = \"" version "\""
+            replaced = 1
+            next
+        }
+        { print }
+    ' pyproject.toml > "$tmp_file"
+    mv "$tmp_file" pyproject.toml
     just sync
 
 # --------------------------------------------
 
-# Commit, push, update symantic version, EXCLUDE the "latest" tag
+# Commit, push, update semantic version, EXCLUDE the "latest" tag
 commit:
     just _commit false
 
 # --------------------------------------------
 
-# Commit, push, update symantic version, INCLUDE the "latest" tag
+# Commit, push, update semantic version, INCLUDE the "latest" tag
 commit-latest:
     just _commit true
 
