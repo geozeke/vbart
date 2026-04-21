@@ -4,13 +4,14 @@ import tempfile as tf
 from datetime import datetime as dt
 from pathlib import Path
 
-import docker  # type:ignore
-from docker import errors
+from docker import errors  # type:ignore
 
 from vbart.constants import BASE_IMAGE
 from vbart.constants import FAIL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
+from vbart.runtime import get_docker_client
+from vbart.runtime import normalize_bind_source
 
 # ======================================================================
 
@@ -24,7 +25,7 @@ def verify_utility_image() -> None:
     # NOTE: The python docker package is not typed, so you'll see lots
     # of "type: ignore" hashtags sprinkled throughout.
 
-    client = docker.from_env()
+    client = get_docker_client()
     try:
         client.images.get(UTILITY_IMAGE)
         return
@@ -97,13 +98,13 @@ def backup_one_volume(volume: str) -> str:
     str
         ``PASS`` if the backup succeeds, otherwise ``FAIL``.
     """
-    client = docker.from_env()
+    client = get_docker_client()
     now = dt.now()
     prefix = f"{now.year}{now.month:02d}{now.day:02d}"
     p = Path(f"{prefix}-{volume}-backup.xz")
     volume_map = {
         volume: {"bind": "/recover", "mode": "rw"},
-        p.parent.absolute(): {"bind": "/backup", "mode": "rw"},
+        normalize_bind_source(p.parent): {"bind": "/backup", "mode": "rw"},
     }
     cmd = f"tar cavf /backup/{p.name} /recover"
 

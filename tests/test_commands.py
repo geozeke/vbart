@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from argparse import Namespace
 from pathlib import Path
+from typing import Any
+from typing import cast
 
 import pytest
 from docker import errors
@@ -25,7 +27,7 @@ def test_backup_task_runner_backs_up_existing_volume(
 ) -> None:
     client = FakeClient(volumes=FakeVolumes(existing_names=["mysql_db"]))
     monkeypatch.setattr(backup, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(backup.docker, "from_env", lambda: client)
+    monkeypatch.setattr(backup, "get_docker_client", lambda: client)
     monkeypatch.setattr(backup, "backup_one_volume", lambda name: "RESULT")
 
     backup.task_runner(Namespace(volume_name="mysql_db"))
@@ -39,7 +41,7 @@ def test_backup_task_runner_exits_for_missing_volume(
 ) -> None:
     client = FakeClient(volumes=FakeVolumes(existing_names=[]))
     monkeypatch.setattr(backup, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(backup.docker, "from_env", lambda: client)
+    monkeypatch.setattr(backup, "get_docker_client", lambda: client)
 
     with pytest.raises(SystemExit) as exc:
         backup.task_runner(Namespace(volume_name="missing"))
@@ -55,7 +57,7 @@ def test_backups_task_runner_uses_sorted_active_volumes(
     client = FakeClient(volumes=FakeVolumes(existing_names=["zeta", "alpha"]))
     backed_up: list[str] = []
     monkeypatch.setattr(backups, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(backups.docker, "from_env", lambda: client)
+    monkeypatch.setattr(backups, "get_docker_client", lambda: client)
     monkeypatch.setattr(
         backups,
         "backup_one_volume",
@@ -65,7 +67,7 @@ def test_backups_task_runner_uses_sorted_active_volumes(
     backups.task_runner(Namespace(volumes=None))
 
     assert backed_up == ["alpha", "zeta"]
-    assert "Backing up all active docker volumes" in capsys.readouterr().out
+    assert "Backing up all active Docker volumes" in capsys.readouterr().out
 
 
 def test_backups_task_runner_filters_from_file(
@@ -78,7 +80,7 @@ def test_backups_task_runner_filters_from_file(
     volume_list = tmp_path / "volumes.txt"
     volume_list.write_text("# comment\ndb\nmissing\n", encoding="utf-8")
     monkeypatch.setattr(backups, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(backups.docker, "from_env", lambda: client)
+    monkeypatch.setattr(backups, "get_docker_client", lambda: client)
     monkeypatch.setattr(
         backups,
         "backup_one_volume",
@@ -101,12 +103,12 @@ def test_backups_task_runner_reports_empty_match(
     volume_list = tmp_path / "volumes.txt"
     volume_list.write_text("cache\n", encoding="utf-8")
     monkeypatch.setattr(backups, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(backups.docker, "from_env", lambda: client)
+    monkeypatch.setattr(backups, "get_docker_client", lambda: client)
 
     with volume_list.open("r", encoding="utf-8") as handle:
         backups.task_runner(Namespace(volumes=handle))
 
-    assert "currently showing up as active docker volumes" in capsys.readouterr().out
+    assert "currently showing up as active Docker volumes" in capsys.readouterr().out
 
 
 def test_restore_task_runner_exits_when_target_exists(
@@ -118,7 +120,7 @@ def test_restore_task_runner_exits_when_target_exists(
     backup_file = tmp_path / "backup.xz"
     backup_file.write_bytes(b"data")
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(restore.docker, "from_env", lambda: client)
+    monkeypatch.setattr(restore, "get_docker_client", lambda: client)
 
     with backup_file.open("rb") as handle:
         with pytest.raises(SystemExit) as exc:
@@ -139,7 +141,7 @@ def test_restore_task_runner_restores_new_volume(
     backup_file = tmp_path / "backup.xz"
     backup_file.write_bytes(b"data")
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(restore.docker, "from_env", lambda: client)
+    monkeypatch.setattr(restore, "get_docker_client", lambda: client)
 
     with backup_file.open("rb") as handle:
         restore.task_runner(Namespace(backup_file=handle, volume_name="restored"))
@@ -149,6 +151,7 @@ def test_restore_task_runner_restores_new_volume(
     assert run_call["image"] == UTILITY_IMAGE
     assert run_call["command"] == 'sh -c "cd /recover && tar xvf /backup/backup.xz --strip 1"'
     assert run_call["volumes"]["restored"]["bind"] == "/recover"
+    assert run_call["volumes"][str(tmp_path.resolve())]["bind"] == "/backup"
     assert capsys.readouterr().out.endswith("✅\n")
 
 
@@ -160,13 +163,19 @@ def test_restore_task_runner_removes_created_volume_on_invalid_backup(
     client = FakeClient(
         volumes=FakeVolumes(existing_names=[]),
         containers=FakeContainers(
-            run_side_effect=errors.ContainerError(None, 1, "cmd", "img", "stderr"),
+            run_side_effect=errors.ContainerError(
+                cast(Any, object()),
+                1,
+                "cmd",
+                "img",
+                "stderr",
+            ),
         ),
     )
     backup_file = tmp_path / "backup.xz"
     backup_file.write_bytes(b"data")
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
-    monkeypatch.setattr(restore.docker, "from_env", lambda: client)
+    monkeypatch.setattr(restore, "get_docker_client", lambda: client)
 
     with backup_file.open("rb") as handle:
         with pytest.raises(SystemExit) as exc:
@@ -187,7 +196,7 @@ def test_refresh_task_runner_removes_dangling_containers_and_image(
         images=FakeImages(existing={UTILITY_IMAGE: object()}),
         containers=FakeContainers(listed=containers),
     )
-    monkeypatch.setattr(refresh.docker, "from_env", lambda: client)
+    monkeypatch.setattr(refresh, "get_docker_client", lambda: client)
 
     refresh.task_runner(Namespace())
 
@@ -204,7 +213,7 @@ def test_refresh_task_runner_reports_when_no_refresh_is_needed(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     client = FakeClient(images=FakeImages(existing={}))
-    monkeypatch.setattr(refresh.docker, "from_env", lambda: client)
+    monkeypatch.setattr(refresh, "get_docker_client", lambda: client)
 
     refresh.task_runner(Namespace())
 

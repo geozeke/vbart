@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from typing import Any
+from typing import cast
 
 import pytest
 from docker import errors
@@ -26,7 +28,7 @@ def test_verify_utility_image_returns_when_image_exists(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     client = FakeClient(images=FakeImages(existing={UTILITY_IMAGE: FakeSavedImage()}))
-    monkeypatch.setattr(utilities.docker, "from_env", lambda: client)
+    monkeypatch.setattr(utilities, "get_docker_client", lambda: client)
 
     utilities.verify_utility_image()
 
@@ -55,7 +57,7 @@ def test_verify_utility_image_builds_and_flattens_helper_image(
         return images.existing[name]
 
     monkeypatch.setattr(images, "get", get)
-    monkeypatch.setattr(utilities.docker, "from_env", lambda: client)
+    monkeypatch.setattr(utilities, "get_docker_client", lambda: client)
     monkeypatch.setattr(
         utilities,
         "render_helper_dockerfile",
@@ -102,7 +104,7 @@ def test_verify_utility_image_removes_pulled_base_image(
         return images.existing[name]
 
     monkeypatch.setattr(images, "get", get)
-    monkeypatch.setattr(utilities.docker, "from_env", lambda: client)
+    monkeypatch.setattr(utilities, "get_docker_client", lambda: client)
     monkeypatch.setattr(
         utilities,
         "render_helper_dockerfile",
@@ -125,7 +127,7 @@ def test_backup_one_volume_builds_expected_command(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     client = FakeClient(containers=FakeContainers())
-    monkeypatch.setattr(utilities.docker, "from_env", lambda: client)
+    monkeypatch.setattr(utilities, "get_docker_client", lambda: client)
     monkeypatch.setattr(utilities, "dt", FrozenDateTime)
 
     result = utilities.backup_one_volume("mysql_db")
@@ -135,7 +137,7 @@ def test_backup_one_volume_builds_expected_command(
     assert run_call["command"] == "tar cavf /backup/20260420-mysql_db-backup.xz /recover"
     assert run_call["image"] == UTILITY_IMAGE
     assert run_call["volumes"]["mysql_db"]["bind"] == "/recover"
-    assert run_call["volumes"][utilities.Path(".").absolute()]["bind"] == "/backup"
+    assert run_call["volumes"][str(utilities.Path(".").resolve())]["bind"] == "/backup"
 
 
 def test_backup_one_volume_returns_fail_on_container_error(
@@ -143,10 +145,16 @@ def test_backup_one_volume_returns_fail_on_container_error(
 ) -> None:
     client = FakeClient(
         containers=FakeContainers(
-            run_side_effect=errors.ContainerError(None, 1, "cmd", "img", "stderr"),
+            run_side_effect=errors.ContainerError(
+                cast(Any, object()),
+                1,
+                "cmd",
+                "img",
+                "stderr",
+            ),
         ),
     )
-    monkeypatch.setattr(utilities.docker, "from_env", lambda: client)
+    monkeypatch.setattr(utilities, "get_docker_client", lambda: client)
     monkeypatch.setattr(utilities, "dt", FrozenDateTime)
 
     result = utilities.backup_one_volume("mysql_db")

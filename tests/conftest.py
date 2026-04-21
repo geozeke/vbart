@@ -109,7 +109,17 @@ class FakeClient:
         images: FakeImages | None = None,
         volumes: FakeVolumes | None = None,
         containers: FakeContainers | None = None,
+        info_data: dict[str, Any] | None = None,
     ) -> None:
         self.images = images or FakeImages()
         self.volumes = volumes or FakeVolumes()
         self.containers = containers or FakeContainers()
+        self.info_data = info_data or {"OSType": "linux"}
+        self.ping_calls = 0
+
+    def ping(self) -> bool:
+        self.ping_calls += 1
+        return True
+
+    def info(self) -> dict[str, Any]:
+        return self.info_data

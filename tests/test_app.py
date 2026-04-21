@@ -6,7 +6,8 @@ import sys
 from types import SimpleNamespace
 
 import pytest
-from docker import errors
+
+from vbart.runtime import UnsupportedRuntimeError
 
 
 def load_app_module(monkeypatch: pytest.MonkeyPatch):
@@ -21,9 +22,9 @@ def test_main_exits_when_docker_runtime_is_unavailable(
 ) -> None:
     app = load_app_module(monkeypatch)
     monkeypatch.setattr(
-        app.docker,
-        "from_env",
-        lambda: (_ for _ in ()).throw(errors.DockerException("no docker")),
+        app,
+        "get_docker_client",
+        lambda: (_ for _ in ()).throw(OSError("no docker")),
     )
 
     with pytest.raises(SystemExit) as exc:
@@ -31,6 +32,24 @@ def test_main_exits_when_docker_runtime_is_unavailable(
 
     assert exc.value.code == 1
     assert "You must have a working Docker runtime to use vbart." in capsys.readouterr().out
+
+
+def test_main_exits_when_windows_container_mode_is_unsupported(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    app = load_app_module(monkeypatch)
+    monkeypatch.setattr(
+        app,
+        "get_docker_client",
+        lambda: (_ for _ in ()).throw(UnsupportedRuntimeError("unsupported mode")),
+    )
+
+    with pytest.raises(SystemExit) as exc:
+        app.main()
+
+    assert exc.value.code == 1
+    assert "unsupported mode" in capsys.readouterr().out
 
 
 def test_main_dispatches_selected_command(monkeypatch: pytest.MonkeyPatch) -> None:

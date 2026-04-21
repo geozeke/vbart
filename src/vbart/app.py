@@ -3,16 +3,17 @@
 """CLI entry point for vbart."""
 
 import argparse
-import docker  # type:ignore
 import importlib
 import sys
 from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
-from docker import errors
+from docker import errors  # type:ignore
 
 from vbart.constants import APP_NAME
 from vbart.constants import ARG_PARSERS_BASE
+from vbart.runtime import UnsupportedRuntimeError
+from vbart.runtime import get_docker_client
 
 # ======================================================================
 
@@ -55,8 +56,10 @@ def sort_parsers(parser_names: list[str]) -> list[str]:
 def verify_docker_runtime() -> None:
     """Exit if Docker is unavailable through the Python SDK."""
     try:
-        client = docker.from_env()
-        client.ping()
+        get_docker_client()
+    except UnsupportedRuntimeError as exc:
+        print(f"\n{exc}\n")
+        sys.exit(1)
     except (errors.DockerException, OSError):
         print("\nYou must have a working Docker runtime to use vbart.\n")
         sys.exit(1)

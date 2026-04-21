@@ -2,10 +2,10 @@
 
 import argparse
 
-import docker  # type:ignore
-from docker import errors
+from docker import errors  # type:ignore
 
 from vbart.constants import UTILITY_IMAGE
+from vbart.runtime import get_docker_client
 
 
 def task_runner(args: argparse.Namespace) -> None:
@@ -21,7 +21,7 @@ def task_runner(args: argparse.Namespace) -> None:
     args : Namespace
         Parsed command-line arguments.
     """
-    client = docker.from_env()
+    client = get_docker_client()
 
     # Prune any dangling containers.
 
