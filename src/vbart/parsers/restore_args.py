@@ -1,7 +1,7 @@
 """Argument parser for the ``restore`` command."""
 
-from argparse import FileType
 from argparse import _SubParsersAction
+from pathlib import Path
 
 COMMAND_NAME = "restore"
 
@@ -19,7 +19,7 @@ def load_command_args(sp: _SubParsersAction) -> None:
     msg = """The .xz backup archive to restore."""
     parser.add_argument(
         "backup_file",
-        type=FileType("rb"),
+        type=Path,
         help=msg,
     )
 

@@ -33,10 +33,9 @@ def test_backups_parser_registers_optional_volume_file(tmp_path: Path) -> None:
     volume_list.write_text("db\n", encoding="utf-8")
 
     args = parser.parse_args(["backups", "-v", str(volume_list)])
-    args.volumes.close()
 
     assert args.cmd == "backups"
-    assert args.volumes.name == str(volume_list)
+    assert args.volumes == volume_list
 
 
 def test_restore_parser_registers_backup_file_and_volume_name(tmp_path: Path) -> None:
@@ -47,10 +46,9 @@ def test_restore_parser_registers_backup_file_and_volume_name(tmp_path: Path) ->
     backup_file.write_bytes(b"data")
 
     args = parser.parse_args(["restore", str(backup_file), "mysql_db"])
-    args.backup_file.close()
 
     assert args.cmd == "restore"
-    assert args.backup_file.name == str(backup_file)
+    assert args.backup_file == backup_file
     assert args.volume_name == "mysql_db"
 
 

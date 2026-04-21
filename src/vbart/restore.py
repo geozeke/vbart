@@ -27,10 +27,8 @@ def task_runner(args: argparse.Namespace) -> None:
     client = get_docker_client()
 
     # Check to see if the volume already exists. If so, report that and
-    # exit. If it doesn't exist, create it. Also, close the backup file
-    # - when it comes time to run the container, we only need the name.
+    # exit. If it doesn't exist, create it.
 
-    args.backup_file.close()
     try:
         client.volumes.get(args.volume_name)
         print(f'Volume "{args.volume_name}" already exists.')
@@ -43,7 +41,7 @@ def task_runner(args: argparse.Namespace) -> None:
 
     # Build volume map.
 
-    p = Path(args.backup_file.name)
+    p = Path(args.backup_file)
     volume_map = {
         args.volume_name: {"bind": "/recover", "mode": "rw"},
         normalize_bind_source(p.parent): {"bind": "/backup", "mode": "rw"},

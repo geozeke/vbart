@@ -1,7 +1,7 @@
 """Argument parser for the ``backups`` command."""
 
-from argparse import FileType
 from argparse import _SubParsersAction
+from pathlib import Path
 
 COMMAND_NAME = "backups"
 
@@ -26,7 +26,7 @@ def load_command_args(sp: _SubParsersAction) -> None:
     parser.add_argument(
         "-v",
         "--volumes",
-        type=FileType("r"),
+        type=Path,
         help=msg,
     )
 

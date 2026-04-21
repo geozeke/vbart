@@ -22,13 +22,12 @@ def task_runner(args: argparse.Namespace) -> None:
     active_names = [v.name for v in client.volumes.list()]  # type:ignore
 
     if args.volumes:
-        print(f"Performing backups using {args.volumes.name}\n")
+        print(f"Performing backups using {args.volumes}\n")
         custom_names = [
             t for
-            token in args.volumes
+            token in args.volumes.read_text(encoding="utf-8").splitlines()
             if (t := token.strip()) and (t[0] != "#")
         ]  # fmt: skip
-        args.volumes.close()
         target_names = list(set(active_names).intersection(set(custom_names)))
     else:
         print("Backing up all active Docker volumes\n")
@@ -44,7 +43,7 @@ def task_runner(args: argparse.Namespace) -> None:
     else:
         if args.volumes:
             msg = f"""None of the volume names listed in
-            {args.volumes.name} are currently showing up as active
+            {args.volumes} are currently showing up as active
             Docker volumes."""
             print(f"{textwrap.fill(text=' '.join(msg.split()),width=60)}")
         else:

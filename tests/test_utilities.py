@@ -137,7 +137,8 @@ def test_backup_one_volume_builds_expected_command(
     assert run_call["command"] == "tar cavf /backup/20260420-mysql_db-backup.xz /recover"
     assert run_call["image"] == UTILITY_IMAGE
     assert run_call["volumes"]["mysql_db"]["bind"] == "/recover"
-    assert run_call["volumes"][str(utilities.Path(".").resolve())]["bind"] == "/backup"
+    backup_root = utilities.normalize_bind_source(utilities.Path("."))
+    assert run_call["volumes"][backup_root]["bind"] == "/backup"
 
 
 def test_backup_one_volume_returns_fail_on_container_error(

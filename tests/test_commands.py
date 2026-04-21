@@ -87,8 +87,7 @@ def test_backups_task_runner_filters_from_file(
         lambda name: backed_up.append(name) or "OK",
     )
 
-    with volume_list.open("r", encoding="utf-8") as handle:
-        backups.task_runner(Namespace(volumes=handle))
+    backups.task_runner(Namespace(volumes=volume_list))
 
     assert backed_up == ["db"]
     assert f"Performing backups using {volume_list}" in capsys.readouterr().out
@@ -105,8 +104,7 @@ def test_backups_task_runner_reports_empty_match(
     monkeypatch.setattr(backups, "verify_utility_image", lambda: None)
     monkeypatch.setattr(backups, "get_docker_client", lambda: client)
 
-    with volume_list.open("r", encoding="utf-8") as handle:
-        backups.task_runner(Namespace(volumes=handle))
+    backups.task_runner(Namespace(volumes=volume_list))
 
     assert "currently showing up as active Docker volumes" in capsys.readouterr().out
 
@@ -122,9 +120,8 @@ def test_restore_task_runner_exits_when_target_exists(
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
     monkeypatch.setattr(restore, "get_docker_client", lambda: client)
 
-    with backup_file.open("rb") as handle:
-        with pytest.raises(SystemExit) as exc:
-            restore.task_runner(Namespace(backup_file=handle, volume_name="restored"))
+    with pytest.raises(SystemExit) as exc:
+        restore.task_runner(Namespace(backup_file=backup_file, volume_name="restored"))
 
     assert exc.value.code == 0
     out = capsys.readouterr().out
@@ -143,15 +140,15 @@ def test_restore_task_runner_restores_new_volume(
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
     monkeypatch.setattr(restore, "get_docker_client", lambda: client)
 
-    with backup_file.open("rb") as handle:
-        restore.task_runner(Namespace(backup_file=handle, volume_name="restored"))
+    restore.task_runner(Namespace(backup_file=backup_file, volume_name="restored"))
 
     assert client.volumes.create_calls == ["restored"]
     run_call = client.containers.run_calls[0]
     assert run_call["image"] == UTILITY_IMAGE
     assert run_call["command"] == 'sh -c "cd /recover && tar xvf /backup/backup.xz --strip 1"'
     assert run_call["volumes"]["restored"]["bind"] == "/recover"
-    assert run_call["volumes"][str(tmp_path.resolve())]["bind"] == "/backup"
+    backup_root = restore.normalize_bind_source(tmp_path)
+    assert run_call["volumes"][backup_root]["bind"] == "/backup"
     assert capsys.readouterr().out.endswith("✅\n")
 
 
@@ -177,9 +174,8 @@ def test_restore_task_runner_removes_created_volume_on_invalid_backup(
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
     monkeypatch.setattr(restore, "get_docker_client", lambda: client)
 
-    with backup_file.open("rb") as handle:
-        with pytest.raises(SystemExit) as exc:
-            restore.task_runner(Namespace(backup_file=handle, volume_name="restored"))
+    with pytest.raises(SystemExit) as exc:
+        restore.task_runner(Namespace(backup_file=backup_file, volume_name="restored"))
 
     assert exc.value.code == 1
     created_volume = client.volumes.by_name["restored"]
