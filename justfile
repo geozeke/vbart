@@ -179,7 +179,7 @@ rebase:
 # Reset the project state
 reset: clean
     echo "Resetting project state"
-    rm -rf .init .mypy_cache .ruff_cache .venv
+    rm -rf .init .venv
 
 # --------------------------------------------
 
