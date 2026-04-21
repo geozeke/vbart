@@ -13,8 +13,7 @@ restoring Docker named volumes.
   - `src/vbart/restore.py`
   - `src/vbart/refresh.py`
 - Argument parser modules live under `src/vbart/parsers/`.
-- Release and maintenance scripts live under `scripts/` and copied
-  helpers under `run/`.
+- Release and maintenance scripts live under `scripts/`.
 
 ## Working Rules
 
@@ -55,6 +54,7 @@ restoring Docker named volumes.
 
 ## Notes
 
-- The project depends on Docker being installed and available on `PATH`.
+- The project depends on a working Docker runtime that is reachable
+  through the Docker Python SDK.
 - Backup and restore behavior is container-based and uses the helper
-  image built from `src/vbart/Dockerfile`.
+  image built from a generated Dockerfile.

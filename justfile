@@ -38,9 +38,9 @@ _commit latest:
     fi
     git commit -m "Bump version"
     if [[ "{{latest}}" == "true" ]]; then
-        ./run/release_tags.sh --latest
+        bash ./scripts/release_tags.sh --latest
     else
-        ./run/release_tags.sh
+        bash ./scripts/release_tags.sh
     fi
     git push origin main
 
@@ -54,10 +54,8 @@ setup:
             echo "{{project_name}} requires uv. See README for instructions."
             exit 1
         fi
-        mkdir -p scratch .init run
+        mkdir -p scratch .init
         touch .init/setup
-        cp ./scripts/*.sh ./run
-        find ./run -name '*.sh' -exec chmod 744 {} \;
         export UV_PYTHON_PREFERENCE=only-managed
         uv sync --frozen --no-dev
     else
@@ -82,9 +80,6 @@ dev: _require_setup
 # Upgrade dependencies
 upgrade: _require_setup
     #!/usr/bin/env bash
-    cp -f ./scripts/*.sh ./run
-    find ./run -name '*.sh' -exec chmod 744 {} \;
-
     if [ -f .init/dev ]; then
         uv sync --upgrade --all-groups
     else
@@ -124,7 +119,7 @@ clean:
 # Reset the project state
 reset: clean
     echo "Resetting project state"
-    rm -rf .init .mypy_cache .ruff_cache .venv run htmlcov
+    rm -rf .init .mypy_cache .ruff_cache .venv htmlcov
 
 # --------------------------------------------
 
@@ -237,13 +232,13 @@ commit-latest:
 
 # Generate release tags
 tags:
-    ./run/release_tags.sh
+    bash ./scripts/release_tags.sh
 
 # --------------------------------------------
 
 # Rebase to the main branch
 rebase:
-    ./run/rebaseline.sh
+    bash ./scripts/rebaseline.sh
 
 # --------------------------------------------
 

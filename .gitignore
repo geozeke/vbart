@@ -31,5 +31,4 @@ htmlcov/
 
 # Project-local generated state
 .init/
-run/
 scratch/
