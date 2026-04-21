@@ -1,58 +1,79 @@
 #!/usr/bin/env python3
 
-"""Entry point for vbart."""
+"""CLI entry point for vbart."""
 
 import argparse
 import importlib
-import shutil
 import sys
 from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
-from typing import List
-from typing import Union
+from docker import errors  # type:ignore
 
 from vbart.constants import APP_NAME
 from vbart.constants import ARG_PARSERS_BASE
+from vbart.runtime import UnsupportedRuntimeError
+from vbart.runtime import get_docker_client
 
 # ======================================================================
 
 __version__ = version("vbart")
+COMMAND_ORDER = ["backup", "backups", "restore", "refresh"]
 
 
-def collect_parsers(start: Path) -> List[str]:
-    """Collect the module names of all argument parsers to import.
+def collect_parsers(start: Path) -> list[str]:
+    """Collect argument parser module names.
 
     Parameters
     ----------
     start : Path
-        This the starting point (directory) for collection.
+        Directory containing the parser modules to import.
 
     Returns
     -------
     list[str]
-        A list of argument parser module names.
+        Fully qualified parser module names.
     """
-    parser_names: List[str] = []
+    parser_names: list[str] = []
     for p in start.iterdir():
         if p.is_file() and p.name != "__init__.py":
             parser_names.append(f"{APP_NAME}.parsers.{p.stem}")
     return parser_names
 
 
+def sort_parsers(parser_names: list[str]) -> list[str]:
+    """Sort parser modules in the desired CLI display order."""
+    order = {
+        f"{APP_NAME}.parsers.{name}_args": index
+        for index, name in enumerate(COMMAND_ORDER)
+    }
+    return sorted(
+        parser_names,
+        key=lambda name: (order.get(name, len(order)), name),
+    )
+
+
+def verify_docker_runtime() -> None:
+    """Exit if Docker is unavailable through the Python SDK."""
+    try:
+        get_docker_client()
+    except UnsupportedRuntimeError as exc:
+        print(f"\n{exc}\n")
+        sys.exit(1)
+    except (errors.DockerException, OSError):
+        print("\nYou must have a working Docker runtime to use vbart.\n")
+        sys.exit(1)
+
+
 # ======================================================================
 
 
 def main() -> None:
-    """Get user input and perform backup and restore operations."""
-    # Make sure docker is installed before going any further
-    if not (shutil.which("docker")):
-        print("\nYou must have docker installed to use vbart.\n")
-        sys.exit(1)
+    """Parse CLI arguments and dispatch the selected command."""
+    verify_docker_runtime()
 
     msg = """
-    Volume Backup And Restoration Tool (for docker). A tool to easily
-    backup and restore named docker volumes.
+    Back up and restore named Docker volumes.
     """
     epi = f"Version: {__version__}"
     parser = argparse.ArgumentParser(
@@ -65,7 +86,7 @@ def main() -> None:
         action="version",
         version=f"{APP_NAME} {__version__}",
     )
-    msg = "For help on any command below, run: vbart {command} -h"
+    msg = "Run 'vbart COMMAND -h' for help on a specific command."
     subparsers = parser.add_subparsers(
         title="commands",
         dest="cmd",
@@ -74,15 +95,9 @@ def main() -> None:
 
     # Dynamically load argument subparsers.
 
-    parser_names: List[str] = []
-    parser_names = collect_parsers(ARG_PARSERS_BASE)
-    parser_names.sort()
+    parser_names = sort_parsers(collect_parsers(ARG_PARSERS_BASE))
 
-    # Argument parsers are saved in alphabetical order. This is a little
-    # slight-of-hand to get the desired order presented on screen.
-    parser_names[-1], parser_names[-2] = parser_names[-2], parser_names[-1]
-
-    mod: Union[ModuleType, None] = None
+    mod: ModuleType | None = None
     for p_name in parser_names:
         mod = importlib.import_module(p_name)
         mod.load_command_args(subparsers)

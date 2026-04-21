@@ -1,37 +1,28 @@
 #!/usr/bin/env python3
-"""Support classes."""
+"""Support classes for status-label handling."""
 
 import sys
 
 
 class ExhaustedListError(Exception):
-    """Exception when attempting to pop elements from an empty list.
-
-    Parameters
-    ----------
-    Exception : Python Exception type
-        ExhaustedListError is a sub-class of Python's Exception class.
-    """
+    """Raised when code attempts to remove a label from an empty list."""
 
     def __init__(self):
-        """Initialize exception."""
+        """Initialize the exception message."""
         self.message = "Cannot remove label, list of labels is empty."
         super().__init__(self.message)
 
 
 class Labels:
-    """Class to manage status labels."""
+    """Manage status labels for aligned console output."""
 
     def __init__(self, s: str) -> None:
-        """Create a new Labels object.
+        """Create a new ``Labels`` object.
 
         Parameters
         ----------
         s : str
-            This is a docstring that has one label per line, the
-            initializer will repackage it into a list, along with an int
-            variable (pad) that represents the length of the longest
-            label. This is used for justifying the output when printing.
+            Multiline string containing one label per line.
         """
         # The (t := token.strip()) part of the list comprehension below
         # is python's assignment expression and takes care of any blank
@@ -43,12 +34,12 @@ class Labels:
         return
 
     def next(self) -> None:
-        """Print the next label (the one at position 0).
+        """Print the next label.
 
         Raises
         ------
         ExhaustedListError
-            If attempting to pop from an empty list.
+            If the label list is empty.
         """
         if len(self.labels) == 0:
             raise ExhaustedListError()
@@ -56,56 +47,56 @@ class Labels:
         return
 
     def pop_first(self) -> str:
-        """Pop and return the first label (position 0).
+        """Pop and return the first label.
 
         Returns
         -------
         str
-            A label.
+            The first label.
 
         Raises
         ------
         ExhaustedListError
-            If attempting to pop from an empty list.
+            If the label list is empty.
         """
         if len(self.labels) == 0:
             raise ExhaustedListError()
         return self.labels.pop(0)
 
     def pop_last(self) -> str:
-        """Pop and return the last label (position -1).
+        """Pop and return the last label.
 
         Returns
         -------
         str
-            A label.
+            The last label.
 
         Raises
         ------
         ExhaustedListError
-            If attempting to pop from an empty list.
+            If the label list is empty.
         """
         if len(self.labels) == 0:
             raise ExhaustedListError()
         return self.labels.pop(-1)
 
     def pop_item(self, index: int) -> str:
-        """Pop a label from a given index.
+        """Pop and return the label at a given index.
 
         Parameters
         ----------
         index : int
-            The index to pop from.
+            Index of the label to remove.
 
         Returns
         -------
         str
-            The popped label.
+            The removed label.
 
         Raises
         ------
         ExhaustedListError
-            If attempting to pop from an empty list.
+            If the label list is empty.
         """
         if len(self.labels) == 0:
             raise ExhaustedListError()

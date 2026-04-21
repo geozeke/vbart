@@ -1,26 +1,27 @@
-"""Remove the vbart_utility image."""
+"""Command handler for refreshing vbart helper resources."""
 
 import argparse
 
-import docker  # type:ignore
-from docker import errors
+from docker import errors  # type:ignore
 
 from vbart.constants import UTILITY_IMAGE
+from vbart.runtime import get_docker_client
 
 
 def task_runner(args: argparse.Namespace) -> None:
-    """Purge any dangling containers and remove the vbart_utility image.
+    """Remove dangling containers and the ``vbart_utility`` image.
 
-    If a backup is interrupted (e.g. cntl-C), then there may be dangling
-    containers that are still hanging on to existing volumes. The
-    refresh option purges those dangling containers.
+    If a backup is interrupted, for example by pressing ``Ctrl+C``,
+    dangling containers may continue to reference existing volumes. This
+    command removes those containers and deletes the helper image so it
+    can be rebuilt on the next run.
 
     Parameters
     ----------
     args : Namespace
-        Command line arguments.
+        Parsed command-line arguments.
     """
-    client = docker.from_env()
+    client = get_docker_client()
 
     # Prune any dangling containers.
 

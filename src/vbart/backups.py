@@ -1,25 +1,24 @@
-"""Perform backup of multiple volumes."""
+"""Command handler for backing up multiple Docker volumes."""
 
 import argparse
 import textwrap
 
-import docker  # type:ignore
-
 from vbart.classes import Labels
+from vbart.runtime import get_docker_client
 from vbart.utilities import backup_one_volume
 from vbart.utilities import verify_utility_image
 
 
 def task_runner(args: argparse.Namespace) -> None:
-    """Backup multiple docker volumes.
+    """Back up multiple Docker volumes.
 
     Parameters
     ----------
     args : Namespace
-        Command line arguments.
+        Parsed command-line arguments.
     """
     verify_utility_image()
-    client = docker.from_env()
+    client = get_docker_client()
     active_names = [v.name for v in client.volumes.list()]  # type:ignore
 
     if args.volumes:
@@ -32,7 +31,7 @@ def task_runner(args: argparse.Namespace) -> None:
         args.volumes.close()
         target_names = list(set(active_names).intersection(set(custom_names)))
     else:
-        print("Backing up all active docker volumes\n")
+        print("Backing up all active Docker volumes\n")
         target_names = active_names.copy()
     target_names.sort()
 
@@ -46,10 +45,10 @@ def task_runner(args: argparse.Namespace) -> None:
         if args.volumes:
             msg = f"""None of the volume names listed in
             {args.volumes.name} are currently showing up as active
-            docker volumes."""
+            Docker volumes."""
             print(f"{textwrap.fill(text=' '.join(msg.split()),width=60)}")
         else:
-            print("No active docker volumes found.")
+            print("No active Docker volumes found.")
 
     return
 

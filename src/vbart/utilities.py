@@ -1,31 +1,31 @@
-"""Utilities to support docker volume backup/restore."""
+"""Utilities for backing up and restoring Docker volumes."""
 
 import tempfile as tf
 from datetime import datetime as dt
 from pathlib import Path
 
-import docker  # type:ignore
-from docker import errors
+from docker import errors  # type:ignore
 
 from vbart.constants import BASE_IMAGE
-from vbart.constants import DOCKERFILE_PATH
 from vbart.constants import FAIL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
+from vbart.runtime import get_docker_client
+from vbart.runtime import normalize_bind_source
 
 # ======================================================================
 
 
 def verify_utility_image() -> None:
-    """Verify the backup utility image is in place.
+    """Ensure that the helper image is available.
 
-    If the utility image is not present, then build it. Also delete any
-    interim build products (images) that were created.
+    If the helper image is missing, build it and remove any temporary
+    image dependencies created during the build.
     """
     # NOTE: The python docker package is not typed, so you'll see lots
     # of "type: ignore" hashtags sprinkled throughout.
 
-    client = docker.from_env()
+    client = get_docker_client()
     try:
         client.images.get(UTILITY_IMAGE)
         return
@@ -43,12 +43,15 @@ def verify_utility_image() -> None:
 
     msg = "Building utility image (this is a one-time operation)..."
     print(f"{msg}", end="", flush=True)
-    client.images.build(
-        path=str(DOCKERFILE_PATH),
-        tag=f"{UTILITY_IMAGE}:latest",
-        nocache=True,
-        rm=True,
-    )
+    with tf.TemporaryDirectory() as build_dir:
+        dockerfile_path = Path(build_dir) / "Dockerfile"
+        dockerfile_path.write_text(render_helper_dockerfile(), encoding="utf-8")
+        client.images.build(
+            path=build_dir,
+            tag=f"{UTILITY_IMAGE}:latest",
+            nocache=True,
+            rm=True,
+        )
 
     # Saving and reloading the image flattens it so it will operate
     # standalone, meaning it won't need any parent image dependencies.
@@ -69,27 +72,39 @@ def verify_utility_image() -> None:
 # ======================================================================
 
 
+def render_helper_dockerfile() -> str:
+    """Render the helper-image Dockerfile from runtime constants."""
+    return (
+        f"FROM {BASE_IMAGE}\n"
+        "RUN apk -U upgrade\n"
+        "# Add support for xz compression\n"
+        "RUN apk add --no-cache xz\n"
+    )
+
+
+# ======================================================================
+
+
 def backup_one_volume(volume: str) -> str:
-    """Perform a backup on a single named volume.
+    """Back up a single named volume.
 
     Parameters
     ----------
     volume : str
-        The name of the volume to backup
+        Name of the volume to back up.
 
     Returns
     -------
     str
-        Return either PASS or FAIL, depending on the result of the
-        backup.
+        ``PASS`` if the backup succeeds, otherwise ``FAIL``.
     """
-    client = docker.from_env()
+    client = get_docker_client()
     now = dt.now()
     prefix = f"{now.year}{now.month:02d}{now.day:02d}"
     p = Path(f"{prefix}-{volume}-backup.xz")
     volume_map = {
         volume: {"bind": "/recover", "mode": "rw"},
-        p.parent.absolute(): {"bind": "/backup", "mode": "rw"},
+        normalize_bind_source(p.parent): {"bind": "/backup", "mode": "rw"},
     }
     cmd = f"tar cavf /backup/{p.name} /recover"
 
