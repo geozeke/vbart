@@ -35,9 +35,8 @@ if [[ "$current_branch" == "$default_branch" ]]; then
 fi
 
 # --- Must be clean ---
-CMD1="git -C $PROJECT_ROOT diff --quiet"
-CMD2="git -C $PROJECT_ROOT diff --cached --quiet"
-if ! $CMD1 || ! $CMD2; then
+if ! git -C "$PROJECT_ROOT" diff --quiet || \
+   ! git -C "$PROJECT_ROOT" diff --cached --quiet; then
   error "Working tree is dirty. Commit or stash first."
   exit 1
 fi
