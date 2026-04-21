@@ -1,6 +1,9 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 project_name := "vbart"
 
+# Show help
+default: help
+
 # --------------------------------------------
 # Private handler for commits
 _commit latest:
@@ -127,11 +130,6 @@ coverage:
 # Run coverage and open HTML report in browser
 coverage-open: coverage
     just _display_webpage "htmlcov/index.html"
-
-# --------------------------------------------
-
-# Show help
-default: help
 
 # --------------------------------------------
 
