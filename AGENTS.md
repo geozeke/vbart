@@ -32,6 +32,9 @@ restoring Docker named volumes.
   needed.
 - Prefer `pathlib.Path` objects over raw path strings where
   practical.
+- Prefer truthiness checks like `if value:` and `if not value:` over
+  explicit empty or `None` comparisons when they are semantically
+  equivalent.
 - Use strict NumPy-style docstrings for all function, class, and
   module docstrings.
 - When asked to review or modify `.gitignore`, also check
