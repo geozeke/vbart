@@ -209,9 +209,9 @@ setup:
 sync: _require_setup
     #!/usr/bin/env bash
     if [ -f .init/dev ]; then
-        uv sync --all-groups --frozen
+        uv sync --all-groups
     else
-        uv sync --no-dev --frozen
+        uv sync --no-dev
     fi
 
 # --------------------------------------------
