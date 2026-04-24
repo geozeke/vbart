@@ -35,19 +35,6 @@ _display_webpage web_path:
     webbrowser.open(url, new=2)
 
 # --------------------------------------------
-# Load PyPI publishing secrets
-_load_publish_secrets:
-    #!/usr/bin/env bash
-    if [ ! -f "$HOME/.secrets" ]; then
-        echo 'Missing "$HOME/.secrets"'
-        exit 1
-    fi
-    set -a
-    . "$HOME/.secrets"
-    set +a
-
-# --------------------------------------------
-
 # Require initial setup to be complete
 _require_setup:
     #!/usr/bin/env bash
@@ -155,16 +142,30 @@ lint:
 # --------------------------------------------
 
 # Publish package to pypi.org for production
-publish-production: _load_publish_secrets build
+publish-production: build
     #!/usr/bin/env bash
+    if [ ! -f "$HOME/.secrets" ]; then
+        echo 'Missing "$HOME/.secrets"'
+        exit 1
+    fi
+    set -a
+    . "$HOME/.secrets"
+    set +a
     : "${PYPI_PROD:?Missing PYPI_PROD in $HOME/.secrets}"
     uv publish --publish-url https://upload.pypi.org/legacy/ -t "$PYPI_PROD"
 
 # --------------------------------------------
 
 # Publish package to test.pypi.org for testing
-publish-test: _load_publish_secrets build
+publish-test: build
     #!/usr/bin/env bash
+    if [ ! -f "$HOME/.secrets" ]; then
+        echo 'Missing "$HOME/.secrets"'
+        exit 1
+    fi
+    set -a
+    . "$HOME/.secrets"
+    set +a
     : "${PYPI_TEST:?Missing PYPI_TEST in $HOME/.secrets}"
     uv publish --publish-url https://test.pypi.org/legacy/ -t "$PYPI_TEST"
 
