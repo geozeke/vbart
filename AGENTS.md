@@ -45,6 +45,13 @@ restoring Docker named volumes.
   break links, code spans, tables, or other formatting that would be
   harmed by wrapping.
 
+## Documentation
+
+- When making changes, ensure documentation and metadata remain
+  consistent. This includes documents in instructions/ and todo/ (if
+  they exist), and files like README.md and AGENTS.md. Also include
+  argparse messages, docstrings, and code comments.
+
 ## Verification
 
 - Read project metadata in `pyproject.toml` before changing packaging
