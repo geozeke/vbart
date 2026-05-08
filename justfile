@@ -4,24 +4,6 @@ project_name := "vbart"
 # Show help
 default: help
 
-# --------------------------------------------
-# Private handler for commits
-_commit latest:
-    #!/usr/bin/env bash
-    git add --update CHANGELOG.md pyproject.toml uv.lock
-    if git diff --cached --quiet; then
-        echo "No release changes found in CHANGELOG.md, pyproject.toml, or uv.lock."
-        exit 1
-    fi
-    git commit -m "Bump version"
-    if [[ "{{latest}}" == "true" ]]; then
-        bash ./scripts/release_tags.sh --latest
-    else
-        bash ./scripts/release_tags.sh
-    fi
-    git push origin main
-
-# --------------------------------------------
 # Open a generated HTML report in the default browser
 _display_webpage web_path:
     #!/usr/bin/env python3
@@ -93,18 +75,6 @@ clean:
     find . -type f -name '*.pyc' -delete
     find . -type f -name '*.pyo' -delete
     find . -type f -name '*.coverage' -delete
-
-# --------------------------------------------
-
-# Commit, push, update semantic version, EXCLUDE the "latest" tag
-commit:
-    just _commit false
-
-# --------------------------------------------
-
-# Commit, push, update semantic version, INCLUDE the "latest" tag
-commit-latest:
-    just _commit true
 
 # --------------------------------------------
 
@@ -217,9 +187,15 @@ sync: _require_setup
 
 # --------------------------------------------
 
-# Generate release tags
-tags:
+# Generate release tag
+tag-release:
     bash ./scripts/release_tags.sh
+
+# --------------------------------------------
+
+# Generate release tag and update latest
+tag-release-latest:
+    bash ./scripts/release_tags.sh --latest
 
 # --------------------------------------------
 
