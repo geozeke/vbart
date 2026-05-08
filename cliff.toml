@@ -64,6 +64,12 @@ protect_breaking_commits = false
 # message. Assigns commits to groups. Optionally sets the commit's scope
 # and can decide to exclude commits from further processing.
 commit_parsers = [
+    # Skip rules must come before broad grouping rules such as
+    # "^chore|^ci" so matching commits do not get grouped first.
+    { message = "^chore\\(release\\): prepare for", skip = true },
+    { message = "^chore\\(deps.*\\)", skip = true },
+    { message = "^chore\\(pr\\)", skip = true },
+    { message = "^chore\\(pull\\)", skip = true },
     { message = "^fix|^bug", group = "<!-- 0 -->🐛 Bug Fixes" },
     { message = "^change", group = "<!-- 1 -->🛠️ Changes" },
     { message = "^dep|^deprecate", group = "<!-- 2 -->👋 Deprecated" },
@@ -81,11 +87,6 @@ commit_parsers = [
     { body = ".*security", group = "<!-- 13 -->🔐 Security Fixes" },
     { message = "^style", group = "<!-- 14 -->🎨 Styling" },
     { message = "^test", group = "<!-- 15 -->🧪 Testing" },
-    # Skip rules
-    { message = "^chore\\(release\\): prepare for", skip = true },
-    { message = "^chore\\(deps.*\\)", skip = true },
-    { message = "^chore\\(pr\\)", skip = true },
-    { message = "^chore\\(pull\\)", skip = true },
 ]
 # Exclude commits that are not matched by any commit parser.
 filter_commits = false
