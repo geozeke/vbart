@@ -1,6 +1,6 @@
 [project]
 name = "vbart"
-version = "0.3.0"
+version = "0.3.1"
 description = "Volume Backup And Restoration Tool for Docker"
 license = "MIT"
 license-files = ["LICENSE", "LICENSE-APACHE-2_0"]

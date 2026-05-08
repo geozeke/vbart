@@ -1,3 +1,23 @@
+## 0.3.1 (2026-05-08)
+
+### 🐛 Bug Fixes
+
+- Remove dupes in cliff.toml (76660c5)
+
+### 🛠️ 📦 Development Dependencies
+
+- Bump ruff from 0.15.11 to 0.15.12 (fd49b79)
+- Bump mypy from 1.20.2 to 2.0.0 (c6005eb)
+
+### ⚙️ Miscellaneous Tasks
+
+- Add documentation consistency check (2d35910)
+- Set default codex model to 5.5 medium (1f2edba)
+
+### 🚜 Refactor
+
+- Streamline tagging and release (c0cffa9)
+
 ## 0.3.0 (2026-04-24)
 
 ### 🐛 Bug Fixes
