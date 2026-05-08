@@ -52,6 +52,28 @@ restoring Docker named volumes.
   they exist), and files like README.md and AGENTS.md. Also include
   argparse messages, docstrings, and code comments.
 
+## Release Workflow
+
+- Update code and documentation before preparing a release.
+- Create a release branch, such as `release/v0.3.1`.
+- Run `just bump <version>` to update `CHANGELOG.md`,
+  `pyproject.toml`, and `uv.lock`.
+- Commit the release changes, open a pull request, and merge it after
+  checks pass.
+- Update local `main` with `git pull --ff-only origin main`.
+- Run `just tag-release` for only the version tag, or
+  `just tag-release-latest` when the mutable `latest` tag should also
+  move.
+- Pushing a `v...` version tag starts the GitHub Actions release
+  workflow, which creates a GitHub Release from the matching
+  `CHANGELOG.md` section. The workflow uses GitHub Actions'
+  built-in `GITHUB_TOKEN` with `contents: write`.
+- The `latest` tag is mutable and must not be treated as an immutable
+  release record. Use it only when that version should become the
+  default install target.
+- PyPI publishing remains a separate manual workflow through
+  `just publish-test` and `just publish-production`.
+
 ## Verification
 
 - Read project metadata in `pyproject.toml` before changing packaging
