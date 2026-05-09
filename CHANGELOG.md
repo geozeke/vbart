@@ -74,7 +74,6 @@
 - Conform licensing to the standard (1f01d8d)
 - Lint AGENTS.md (091c9b1)
 - Add CI pipeline for linting and testing (e6bca3e)
-- Lint rebaseline.sh (c59948c)
 - Cleanup justfile (51a9bad)
 - Lint justfile (26e6495)
 - Host logo within repo (f0a48ba)
