@@ -56,8 +56,8 @@ restoring Docker named volumes.
 
 - Update code and documentation before preparing a release.
 - Create a release branch, such as `release/v0.3.1`.
-- Run `just bump <version>` to update `CHANGELOG.md`,
-  `pyproject.toml`, and `uv.lock`.
+- Run `just bump <version>` to update `CHANGELOG.md`, archived
+  changelog files under `changelogs/`, `pyproject.toml`, and `uv.lock`.
 - Commit the release changes, open a pull request, and merge it after
   checks pass.
 - Update local `main` with `git pull --ff-only origin main`.
@@ -66,8 +66,8 @@ restoring Docker named volumes.
   move.
 - Pushing a `v...` version tag starts the GitHub Actions release
   workflow, which creates a GitHub Release from the matching
-  `CHANGELOG.md` section. The workflow uses GitHub Actions'
-  built-in `GITHUB_TOKEN` with `contents: write`.
+  `CHANGELOG.md` or `changelogs/` section. The workflow uses GitHub
+  Actions' built-in `GITHUB_TOKEN` with `contents: write`.
 - The `latest` tag is mutable and must not be treated as an immutable
   release record. Use it only when that version should become the
   default install target.
