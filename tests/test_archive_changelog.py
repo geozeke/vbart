@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "archive_changelog.py"
 SPEC = importlib.util.spec_from_file_location("archive_changelog", SCRIPT_PATH)
@@ -372,6 +374,9 @@ def test_extract_release_notes_reports_missing_release(tmp_path: Path) -> None:
 
 
 def test_release_tag_latest_rejects_prerelease(tmp_path: Path) -> None:
+    if sys.platform == "win32":
+        pytest.skip("release_tags.sh requires a usable POSIX shell")
+
     scripts_dir = tmp_path / "scripts"
     scripts_dir.mkdir()
     source_script = Path(__file__).resolve().parents[1] / "scripts"

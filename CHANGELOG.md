@@ -1,4 +1,8 @@
-## 0.3.2 (2026-05-11)
+## 0.3.3 (2026-05-11)
+
+### 🐛 Bug Fixes
+
+- Fix pytest failure on Windows (2f62326)
 
 ### 🛠️ Changes
 
@@ -7,6 +11,10 @@
 ### 🗑️ Removed
 
 - Delete "just rebase" recipe (a5ab271)
+
+### 🛠️ 📦 Development Dependencies
+
+- Bump urllib3 from 2.6.3 to 2.7.0 in the uv group across 1 directory (b2d1218)
 
 ### ⚙️ Miscellaneous Tasks
 
