@@ -40,6 +40,7 @@ bump version:
     new_version="{{version}}"
     new_version="${new_version#v}"
     git cliff --unreleased --tag "$new_version" --prepend CHANGELOG.md
+    uv run python scripts/archive_changelog.py "$new_version"
     tmp_changelog="$(mktemp)"
     awk '
         NR == 1 { print; prev = $0; next }
@@ -138,12 +139,6 @@ publish-test: build
     set +a
     : "${PYPI_TEST:?Missing PYPI_TEST in $HOME/.secrets}"
     uv publish --publish-url https://test.pypi.org/legacy/ -t "$PYPI_TEST"
-
-# --------------------------------------------
-
-# Rebase to the main branch
-rebase:
-    bash ./scripts/rebaseline.sh
 
 # --------------------------------------------
 

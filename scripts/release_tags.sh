@@ -37,6 +37,12 @@ version=$(grep -E '^version *= *"' "$PYPROJECT" | \
   sed -E 's/version *= *"([^"]+)"/\1/')
 tag="v$version"
 
+if [[ "$TAG_LATEST" == true && "$version" == *-* ]]; then
+  echo "Error: Refusing to move 'latest' for prerelease version '$version'."
+  echo "Use 'just tag-release' for beta and release candidate versions."
+  exit 1
+fi
+
 # Ensure we're on the main branch
 current_branch=$(git -C "$PROJECT_ROOT" rev-parse --abbrev-ref HEAD)
 if [[ "$current_branch" != "main" ]]; then
