@@ -4,6 +4,7 @@ set -eu
 usage() {
   echo "Usage: $0 <tag> <output-file>"
   echo "  Example: $0 v0.3.0 .release-notes.md"
+  echo "  Example: $0 v0.4.0-beta.1 .release-notes.md"
   exit 1
 }
 
@@ -53,15 +54,13 @@ extract_notes() {
   BEGIN {
     in_section = 0
     found = 0
-    release_heading = "^## v?[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]* \\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\\)$"
-    target_heading = "^## " version " \\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\\)$"
   }
 
-  $0 ~ release_heading {
+  /^## / {
     if (in_section) {
       exit
     }
-    if ($0 ~ target_heading) {
+    if ($0 ~ "^## v?" version "([[:space:]]|$)") {
       in_section = 1
       found = 1
     }

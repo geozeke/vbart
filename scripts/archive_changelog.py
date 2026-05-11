@@ -16,10 +16,40 @@ from pathlib import Path
 
 
 HEADING_RE = re.compile(
-    r"^##\s+v?(?P<version>\d+\.\d+\.\d+)\s+\(\d{4}-\d{2}-\d{2}\)$"
+    r"^##\s+v?(?P<version>\d+\.\d+\.\d+(?:-(?:beta|rc)\.\d+)?)"
+    r"\s+\(\d{4}-\d{2}-\d{2}\).*$"
 )
 LINK_DEFINITION_RE = re.compile(r"^\[([^\]]+)\]:\s+\S+", re.MULTILINE)
 REFERENCE_RE = re.compile(r"\[([^\]\n]+)\](?:\[([^\]\n]+)\])?")
+VERSION_RE = re.compile(
+    r"^v?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)"
+    r"(?:-(?P<label>beta|rc)\.(?P<number>\d+))?$"
+)
+
+
+@dataclass(frozen=True)
+class SemanticVersion:
+    """Represent a supported semantic version.
+
+    Parameters
+    ----------
+    major
+        Major version component.
+    minor
+        Minor version component.
+    patch
+        Patch version component.
+    prerelease_label
+        Optional prerelease label, such as ``beta`` or ``rc``.
+    prerelease_number
+        Optional prerelease sequence number.
+    """
+
+    major: int
+    minor: int
+    patch: int
+    prerelease_label: str | None = None
+    prerelease_number: int | None = None
 
 
 @dataclass(frozen=True)
@@ -40,12 +70,44 @@ class ReleaseSection:
     @property
     def major_minor(self) -> tuple[int, int]:
         """Return the semantic major/minor version tuple."""
-        major, minor, _patch = parse_version(self.version)
-        return major, minor
+        parsed = parse_semantic_version(self.version)
+        return parsed.major, parsed.minor
+
+
+def parse_semantic_version(version: str) -> SemanticVersion:
+    """Parse a semantic version.
+
+    Parameters
+    ----------
+    version
+        Semantic version with or without a leading ``v``. Stable,
+        ``beta.N``, and ``rc.N`` releases are supported.
+
+    Returns
+    -------
+    SemanticVersion
+        Parsed version components.
+
+    Raises
+    ------
+    ValueError
+        If ``version`` is not a supported semantic version.
+    """
+    match = VERSION_RE.match(version)
+    if not match:
+        raise ValueError(f"Expected semantic version, got: {version}")
+    prerelease_number = match.group("number")
+    return SemanticVersion(
+        major=int(match.group("major")),
+        minor=int(match.group("minor")),
+        patch=int(match.group("patch")),
+        prerelease_label=match.group("label"),
+        prerelease_number=int(prerelease_number) if prerelease_number else None,
+    )
 
 
 def parse_version(version: str) -> tuple[int, int, int]:
-    """Parse a semantic version.
+    """Parse a semantic version's stable release components.
 
     Parameters
     ----------
@@ -56,21 +118,9 @@ def parse_version(version: str) -> tuple[int, int, int]:
     -------
     tuple[int, int, int]
         Major, minor, and patch components.
-
-    Raises
-    ------
-    ValueError
-        If ``version`` is not a three-part semantic version.
     """
-    normalized = version.removeprefix("v")
-    parts = normalized.split(".")
-    if len(parts) != 3:
-        raise ValueError(f"Expected semantic version, got: {version}")
-    try:
-        major, minor, patch = (int(part) for part in parts)
-    except ValueError as exc:
-        raise ValueError(f"Expected semantic version, got: {version}") from exc
-    return major, minor, patch
+    parsed = parse_semantic_version(version)
+    return parsed.major, parsed.minor, parsed.patch
 
 
 def split_changelog(text: str) -> tuple[str, list[ReleaseSection], dict[str, str]]:
@@ -122,9 +172,18 @@ def split_changelog(text: str) -> tuple[str, list[ReleaseSection], dict[str, str
     return preamble, releases, link_definitions
 
 
-def section_sort_key(section: ReleaseSection) -> tuple[int, int, int]:
+def section_sort_key(section: ReleaseSection) -> tuple[int, int, int, int, int]:
     """Return a semantic-version sort key for a release section."""
-    return parse_version(section.version)
+    parsed = parse_semantic_version(section.version)
+    prerelease_rank = {"beta": 0, "rc": 1, None: 2}[parsed.prerelease_label]
+    prerelease_number = parsed.prerelease_number or 0
+    return (
+        parsed.major,
+        parsed.minor,
+        parsed.patch,
+        prerelease_rank,
+        prerelease_number,
+    )
 
 
 def find_used_references(text: str) -> set[str]:
@@ -259,7 +318,9 @@ def archive_changelog(
             )
 
         merged_sections = {section.version: section for section in existing_releases}
-        merged_sections.update({section.version: section for section in archived_releases})
+        merged_sections.update(
+            {section.version: section for section in archived_releases}
+        )
         merged_releases = sorted(
             merged_sections.values(),
             key=section_sort_key,
@@ -283,7 +344,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Archive CHANGELOG.md entries outside a semantic minor line."
     )
-    parser.add_argument("version", help="Target semantic version, e.g. v0.4.0.")
+    parser.add_argument(
+        "version",
+        help="Target semantic version, e.g. v0.4.0 or v0.4.0-beta.1.",
+    )
     parser.add_argument(
         "--changelog",
         type=Path,

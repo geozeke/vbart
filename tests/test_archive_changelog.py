@@ -190,6 +190,84 @@ def test_archive_merges_existing_sections_newest_first(tmp_path: Path) -> None:
     assert archive.index("## 0.3.1") < archive.index("## 0.3.0")
 
 
+def test_prerelease_sections_stay_in_matching_minor_archive(
+    tmp_path: Path,
+) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    archive_dir = tmp_path / "changelogs"
+    changelog.write_text(
+        """## 0.4.0-beta.1 (2026-05-09)
+
+### Added
+
+- Current prerelease.
+
+## 0.3.1 (2026-05-08)
+
+### Fixed
+
+- Previous release.
+""",
+        encoding="utf-8",
+    )
+
+    changed = archive_changelog.archive_changelog(
+        "v0.4.0-beta.1",
+        changelog,
+        archive_dir,
+    )
+
+    assert changed
+    active = changelog.read_text(encoding="utf-8")
+    assert "## 0.4.0-beta.1 (2026-05-09)" in active
+    assert "## 0.3.1" not in active
+    assert "## 0.3.1" in (archive_dir / "v0.3.x.md").read_text(encoding="utf-8")
+
+
+def test_archive_sorts_prereleases_by_semver_precedence(tmp_path: Path) -> None:
+    changelog = tmp_path / "CHANGELOG.md"
+    archive_dir = tmp_path / "changelogs"
+    archive_dir.mkdir()
+    changelog.write_text(
+        """## 0.5.0 (2026-05-09)
+
+### Added
+
+- Current release.
+
+## 0.4.0 (2026-05-08)
+
+### Added
+
+- Stable release.
+""",
+        encoding="utf-8",
+    )
+    (archive_dir / "v0.4.x.md").write_text(
+        """## 0.4.0-beta.1 (2026-05-06)
+
+### Added
+
+- Beta release.
+
+## 0.4.0-rc.1 (2026-05-07)
+
+### Added
+
+- Release candidate.
+""",
+        encoding="utf-8",
+    )
+
+    archive_changelog.archive_changelog("0.5.0", changelog, archive_dir)
+
+    archive = (archive_dir / "v0.4.x.md").read_text(encoding="utf-8")
+    stable_index = archive.index("## 0.4.0 (2026-05-08)")
+    rc_index = archive.index("## 0.4.0-rc.1 (2026-05-07)")
+    beta_index = archive.index("## 0.4.0-beta.1 (2026-05-06)")
+    assert stable_index < rc_index < beta_index
+
+
 def test_extract_release_notes_reads_active_release(tmp_path: Path) -> None:
     output = run_extract_release_notes(
         tmp_path,
@@ -204,6 +282,22 @@ def test_extract_release_notes_reads_active_release(tmp_path: Path) -> None:
 
     assert "## 0.3.1" in output
     assert "Active release." in output
+
+
+def test_extract_release_notes_reads_active_prerelease(tmp_path: Path) -> None:
+    output = run_extract_release_notes(
+        tmp_path,
+        "v0.4.0-beta.1",
+        changelog="""## v0.4.0-beta.1 (2026-05-09)
+
+### Added
+
+- Active beta release.
+""",
+    )
+
+    assert "## v0.4.0-beta.1" in output
+    assert "Active beta release." in output
 
 
 def test_extract_release_notes_reads_archived_release(tmp_path: Path) -> None:
@@ -229,32 +323,27 @@ def test_extract_release_notes_reads_archived_release(tmp_path: Path) -> None:
     assert "Archived release." in output
 
 
-def test_extract_release_notes_keeps_non_release_level_two_headings(
-    tmp_path: Path,
-) -> None:
+def test_extract_release_notes_reads_archived_prerelease(tmp_path: Path) -> None:
     output = run_extract_release_notes(
         tmp_path,
-        "v0.2.0",
-        changelog="""## 0.3.1 (2026-05-08)
+        "v0.4.0-rc.1",
+        changelog="""## 0.5.0 (2026-05-09)
 
 ### Fixed
 
 - Active release.
 """,
-        archive="""## 0.2.0 (2026-03-06)
+        archive="""## 0.4.0-rc.1 (2026-05-08)
 
-## BREAKING
+### Changed
 
-- Breaking change.
-
-### Fixed
-
-- Archived fix.
+- Archived release candidate.
 """,
+        archive_name="v0.4.x.md",
     )
 
-    assert "## BREAKING" in output
-    assert "Archived fix." in output
+    assert "## 0.4.0-rc.1 (2026-05-08)" in output
+    assert "Archived release candidate." in output
 
 
 def test_extract_release_notes_reports_missing_release(tmp_path: Path) -> None:
@@ -280,6 +369,31 @@ def test_extract_release_notes_reports_missing_release(tmp_path: Path) -> None:
 
     assert result.returncode == 2
     assert "not found in CHANGELOG.md or" in result.stderr
+
+
+def test_release_tag_latest_rejects_prerelease(tmp_path: Path) -> None:
+    scripts_dir = tmp_path / "scripts"
+    scripts_dir.mkdir()
+    source_script = Path(__file__).resolve().parents[1] / "scripts"
+    script = scripts_dir / "release_tags.sh"
+    script.write_text(
+        (source_script / "release_tags.sh").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "vbart"\nversion = "0.4.0-rc.1"\n',
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(script), "--latest"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 1
+    assert "Refusing to move 'latest' for prerelease version" in result.stdout
 
 
 def run_extract_release_notes(
