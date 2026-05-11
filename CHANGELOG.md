@@ -1,3 +1,17 @@
+## 0.3.2 (2026-05-11)
+
+### 🛠️ Changes
+
+- Streamling changelogs (76be165)
+
+### 🗑️ Removed
+
+- Delete "just rebase" recipe (a5ab271)
+
+### ⚙️ Miscellaneous Tasks
+
+- Update tagging to be SemVer compliant (6d69c89)
+
 ## 0.3.1 (2026-05-08)
 
 ### 🐛 Bug Fixes
