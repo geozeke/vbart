@@ -157,6 +157,10 @@ setup:
             echo "{{project_name}} requires uv. See README for instructions."
             exit 1
         fi
+        if ! command -v git >/dev/null 2>&1; then
+            echo "{{project_name}} requires git. See README for instructions."
+            exit 1
+        fi
         mkdir -p scratch .init
         touch .init/setup
         export UV_PYTHON_PREFERENCE=only-managed
@@ -208,9 +212,4 @@ typecheck:
 
 # Upgrade dependencies
 upgrade: _require_setup
-    #!/usr/bin/env bash
-    if [ -f .init/dev ]; then
-        uv sync --upgrade --all-groups
-    else
-        uv sync --upgrade --no-dev
-    fi
+    bash ./scripts/upgrade_dependencies.sh

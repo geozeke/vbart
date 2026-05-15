@@ -72,8 +72,8 @@ commit_parsers = [
     { message = "^chore\\(pull\\)", skip = true },
     { message = "^fix|^bug", group = "<!-- 0 -->🐛 Bug Fixes" },
     { message = "^change", group = "<!-- 1 -->🛠️ Changes" },
-    { message = "^dep|^deprecate", group = "<!-- 2 -->👋 Deprecated" },
-    { message = "^dev", group = "<!-- 3 -->🛠️ 📦 Development Dependencies" },
+    { message = "^deprecate|^deprecated", group = "<!-- 2 -->👋 Deprecated" },
+    { message = "^deps", group = "<!-- 3 -->📦 Dependency Upgrades" },
     { message = "^doc", group = "<!-- 4 -->📚 Documentation" },
     { message = "^feat|^feature", group = "<!-- 5 -->🚀 Features" },
     { message = "^chore|^ci", group = "<!-- 6 -->⚙️ Miscellaneous Tasks" },
@@ -81,7 +81,6 @@ commit_parsers = [
     { message = "^refactor", group = "<!-- 9 -->🚜 Refactor" },
     { message = "^revert", group = "<!-- 10 -->◀️ Revert" },
     { message = "^remove", group = "<!-- 11 -->🗑️ Removed" },
-    { message = "^run|^runtime", group = "<!-- 12 -->📦 Runtime Dependencies" },
     # Checks both the message AND the body for "security"
     { message = "^sec|^security", group = "<!-- 13 -->🔐 Security Fixes" },
     { body = ".*security", group = "<!-- 13 -->🔐 Security Fixes" },

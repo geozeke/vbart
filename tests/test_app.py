@@ -31,7 +31,10 @@ def test_main_exits_when_docker_runtime_is_unavailable(
         app.main()
 
     assert exc.value.code == 1
-    assert "You must have a working Docker runtime to use vbart." in capsys.readouterr().out
+    assert (
+        "You must have a working Docker runtime to use vbart."
+        in capsys.readouterr().out
+    )
 
 
 def test_main_exits_when_windows_container_mode_is_unsupported(
@@ -70,7 +73,9 @@ def test_main_dispatches_selected_command(monkeypatch: pytest.MonkeyPatch) -> No
         parser.add_argument("volume_name")
 
     parser_module = SimpleNamespace(load_command_args=load_backup_args)
-    restore_module = SimpleNamespace(load_command_args=lambda sp: sp.add_parser("restore"))
+    restore_module = SimpleNamespace(
+        load_command_args=lambda sp: sp.add_parser("restore")
+    )
 
     def task_runner(args) -> None:
         called["cmd"] = args.cmd
@@ -114,8 +119,12 @@ def test_main_dispatches_null_module_without_command(
         parser.add_argument("volume_name")
 
     parser_module = SimpleNamespace(load_command_args=load_backup_args)
-    restore_module = SimpleNamespace(load_command_args=lambda sp: sp.add_parser("restore"))
-    null_module = SimpleNamespace(task_runner=lambda args: called.setdefault("cmd", args.cmd))
+    restore_module = SimpleNamespace(
+        load_command_args=lambda sp: sp.add_parser("restore")
+    )
+    null_module = SimpleNamespace(
+        task_runner=lambda args: called.setdefault("cmd", args.cmd)
+    )
 
     def fake_import_module(name: str):
         mapping = {

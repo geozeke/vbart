@@ -79,6 +79,21 @@ restoring Docker named volumes.
 - PyPI publishing remains a separate manual workflow through
   `just publish-test` and `just publish-production`.
 
+## Dependency Maintenance
+
+- Run `just upgrade` only from a clean Git worktree.
+- The upgrade command creates one local commit titled
+  `deps: Dependency Upgrades` when first-order locked dependency
+  versions change.
+- The commit body lists changed first-order dependencies as
+  `old -> new` locked version pairs.
+- The command stages only dependency files, does not push, and leaves
+  review and manual pushing to the maintainer.
+- No commit is created when only transitive dependencies change or when
+  no first-order dependency versions change.
+- Use `deps:` as the shared dependency-upgrade changelog prefix.
+- Use `deprecate:` or `deprecated:` for deprecated changelog entries.
+
 ## Verification
 
 - Read project metadata in `pyproject.toml` before changing packaging

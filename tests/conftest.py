@@ -54,9 +54,7 @@ class FakeVolume:
 
 class FakeVolumes:
     def __init__(self, existing_names: list[str] | None = None) -> None:
-        self.by_name = {
-            name: FakeVolume(name) for name in (existing_names or [])
-        }
+        self.by_name = {name: FakeVolume(name) for name in (existing_names or [])}
         self.create_calls: list[str] = []
 
     def get(self, name: str) -> FakeVolume:

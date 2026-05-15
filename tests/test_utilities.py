@@ -82,10 +82,16 @@ def test_verify_utility_image_builds_and_flattens_helper_image(
     assert build_call["nocache"] is True
     assert build_call["rm"] is True
     dockerfile_path = build_dir / "Dockerfile"
-    assert dockerfile_path.read_text(encoding="utf-8") == "FROM alpine:3.23\nRUN echo hello\n"
+    assert (
+        dockerfile_path.read_text(encoding="utf-8")
+        == "FROM alpine:3.23\nRUN echo hello\n"
+    )
     assert images.remove_calls == [UTILITY_IMAGE]
     assert images.load_calls == [b"chunk1chunk2"]
-    assert capsys.readouterr().out == "Building utility image (this is a one-time operation)...Done\n"
+    assert (
+        capsys.readouterr().out
+        == "Building utility image (this is a one-time operation)...Done\n"
+    )
 
 
 def test_verify_utility_image_removes_pulled_base_image(
@@ -134,7 +140,9 @@ def test_backup_one_volume_builds_expected_command(
 
     assert result == PASS
     run_call = client.containers.run_calls[0]
-    assert run_call["command"] == "tar cavf /backup/20260420-mysql_db-backup.xz /recover"
+    assert (
+        run_call["command"] == "tar cavf /backup/20260420-mysql_db-backup.xz /recover"
+    )
     assert run_call["image"] == UTILITY_IMAGE
     assert run_call["volumes"]["mysql_db"]["bind"] == "/recover"
     backup_root = utilities.normalize_bind_source(utilities.Path("."))

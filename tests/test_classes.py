@@ -15,7 +15,7 @@ def test_labels_next_prints_first_label(
 
     out = capsys.readouterr().out
     assert out.startswith("first")
-    assert set(out[len("first"):]) == {"."}
+    assert set(out[len("first") :]) == {"."}
     assert labels.labels == ["second"]
 
 
