@@ -210,6 +210,24 @@ typecheck:
 
 # --------------------------------------------
 
+# Show outdated top-level dependencies
+outdated:
+    #!/usr/bin/env bash
+    export UV_CACHE_DIR="${UV_CACHE_DIR:-.uv-cache}"
+    uv tree --outdated --depth=1 | awk '
+        /latest/ {
+            found = 1
+            print
+        }
+        END {
+            if (!found) {
+                print "No outdated top-level dependencies found."
+            }
+        }
+    '
+
+# --------------------------------------------
+
 # Upgrade dependencies
 upgrade: _require_setup
     bash ./scripts/upgrade_dependencies.sh
