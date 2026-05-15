@@ -18,7 +18,7 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - exercised on Python 3.10.
     import tomli as tomllib
 
-COMMIT_SUBJECT = "deps: Dependency Upgrades"
+COMMIT_SUBJECT = "deps: DEPS-See commit msg for list"
 NAME_PATTERN = re.compile(r"^\s*([A-Za-z0-9_.-]+)")
 OUTDATED_TREE_PATTERN = re.compile(
     r"^[\s│]*[├└]── (?P<name>[A-Za-z0-9_.-]+) v\S+ .*latest:"

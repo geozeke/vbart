@@ -177,7 +177,7 @@ def test_render_commit_message_uses_exact_subject_and_body() -> None:
     )
 
     assert message == (
-        "deps: Dependency Upgrades\n"
+        "deps: DEPS-See commit msg for list\n"
         "\n"
         "- rich: 14.0.0 -> 15.0.0\n"
         "- pytest: 8.3.5 -> 9.0.3\n"
