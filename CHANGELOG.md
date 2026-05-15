@@ -1,3 +1,17 @@
+## 0.3.4 (2026-05-15)
+
+### 📦 Dependency Upgrades
+
+- Dependency Upgrades (50cae8a)
+
+### ⚙️ Miscellaneous Tasks
+
+- Streamline dependency management (5d7dc00)
+
+### 🚜 Refactor
+
+- Implement standard entry point (846b8e9)
+
 ## 0.3.3 (2026-05-11)
 
 ### 🐛 Bug Fixes
