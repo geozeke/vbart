@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import sys
 from pathlib import Path
@@ -98,6 +99,65 @@ def test_dependency_updates_ignore_transitive_only_changes() -> None:
             new_version="9.0.3",
         ),
     ]
+
+
+def test_outdated_first_order_packages_ignore_transitive_packages() -> None:
+    dependencies = {
+        "docker": "Docker",
+        "pytest": "pytest",
+        "pytest-cov": "pytest-cov",
+    }
+    tree_output = """
+vbart v0.3.3
+├── Docker v7.1.0 (latest: v7.2.0)
+│   └── urllib3 v2.4.0 (latest: v2.6.0)
+├── pytest v8.4.2 (latest: v9.0.3)
+├── pytest-cov v7.0.0 (latest: v7.1.0)
+└── requests v2.32.4 (latest: v2.32.5)
+"""
+
+    packages = dependency_upgrade_commit.outdated_first_order_packages(
+        dependencies,
+        tree_output,
+    )
+
+    assert packages == ["Docker", "pytest", "pytest-cov"]
+
+
+def test_outdated_command_prints_first_order_packages(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text(
+        """
+[project]
+dependencies = ["docker>=7.1.0"]
+
+[dependency-groups]
+dev = ["pytest>=8.4.2"]
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        sys,
+        "stdin",
+        io.StringIO(
+            "├── docker v7.1.0 (latest: v7.2.0)\n└── urllib3 v2.4.0 (latest: v2.6.0)\n"
+        ),
+    )
+
+    result = dependency_upgrade_commit.main(
+        [
+            "outdated",
+            "--pyproject",
+            str(pyproject),
+        ]
+    )
+
+    assert result == 0
+    assert capsys.readouterr().out == "docker\n"
 
 
 def test_render_commit_message_uses_exact_subject_and_body() -> None:

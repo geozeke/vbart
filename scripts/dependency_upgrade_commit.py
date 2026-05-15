@@ -20,6 +20,9 @@ except ModuleNotFoundError:  # pragma: no cover - exercised on Python 3.10.
 
 COMMIT_SUBJECT = "deps: Dependency Upgrades"
 NAME_PATTERN = re.compile(r"^\s*([A-Za-z0-9_.-]+)")
+OUTDATED_TREE_PATTERN = re.compile(
+    r"^[\s│]*[├└]── (?P<name>[A-Za-z0-9_.-]+) v\S+ .*latest:"
+)
 
 
 @dataclass(frozen=True)
@@ -198,6 +201,40 @@ def render_commit_message(updates: list[DependencyUpdate]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def outdated_first_order_packages(
+    dependencies: dict[str, str],
+    tree_output: str,
+) -> list[str]:
+    """Read outdated first-order package names from ``uv tree`` output.
+
+    Parameters
+    ----------
+    dependencies
+        Normalized first-order dependency names mapped to display names.
+    tree_output
+        Output from ``uv tree --outdated --depth=1``.
+
+    Returns
+    -------
+    list[str]
+        Outdated first-order package names to pass to ``uv sync
+        --upgrade-package``.
+    """
+
+    packages: list[str] = []
+    seen: set[str] = set()
+    for line in tree_output.splitlines():
+        match = OUTDATED_TREE_PATTERN.match(line)
+        if not match:
+            continue
+        normalized_name = normalize_name(match.group("name"))
+        if normalized_name not in dependencies or normalized_name in seen:
+            continue
+        seen.add(normalized_name)
+        packages.append(dependencies[normalized_name])
+    return packages
+
+
 def _snapshot(args: argparse.Namespace) -> int:
     versions = locked_versions(args.lockfile)
     args.output.write_text(json.dumps(versions, indent=2) + "\n", encoding="utf-8")
@@ -214,6 +251,14 @@ def _message(args: argparse.Namespace) -> int:
         return 1
 
     args.output.write_text(render_commit_message(updates), encoding="utf-8")
+    return 0
+
+
+def _outdated(args: argparse.Namespace) -> int:
+    dependencies = first_order_dependencies(args.pyproject)
+    tree_output = sys.stdin.read()
+    for package in outdated_first_order_packages(dependencies, tree_output):
+        print(package)
     return 0
 
 
@@ -242,6 +287,10 @@ def build_parser() -> argparse.ArgumentParser:
     message.add_argument("--before", type=Path, required=True)
     message.add_argument("--output", type=Path, required=True)
     message.set_defaults(func=_message)
+
+    outdated = subparsers.add_parser("outdated")
+    outdated.add_argument("--pyproject", type=Path, default=Path("pyproject.toml"))
+    outdated.set_defaults(func=_outdated)
 
     return parser
 

@@ -88,6 +88,9 @@ restoring Docker named volumes.
   versions change.
 - The commit body lists changed first-order dependencies as
   `old -> new` locked version pairs.
+- The command upgrades only outdated first-order dependencies with
+  targeted package upgrade arguments; it must not run a blanket
+  transitive dependency upgrade.
 - The command stages only dependency files, does not push, and leaves
   review and manual pushing to the maintainer.
 - No commit is created when only transitive dependencies change or when
