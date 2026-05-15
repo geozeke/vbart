@@ -21,6 +21,7 @@ def test_main_exits_when_docker_runtime_is_unavailable(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     app = load_app_module(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["vbart", "backup", "mysql_db"])
     monkeypatch.setattr(
         app,
         "get_docker_client",
@@ -42,6 +43,7 @@ def test_main_exits_when_windows_container_mode_is_unsupported(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     app = load_app_module(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["vbart", "backup", "mysql_db"])
     monkeypatch.setattr(
         app,
         "get_docker_client",
@@ -53,6 +55,36 @@ def test_main_exits_when_windows_container_mode_is_unsupported(
 
     assert exc.value.code == 1
     assert "unsupported mode" in capsys.readouterr().out
+
+
+def test_main_prints_help_without_docker_runtime(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    app = load_app_module(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["vbart", "-h"])
+    monkeypatch.setattr(
+        app,
+        "get_docker_client",
+        lambda: (_ for _ in ()).throw(OSError("no docker")),
+    )
+
+    with pytest.raises(SystemExit) as exc:
+        app.main()
+
+    assert exc.value.code == 0
+    assert "Back up and restore named Docker volumes." in capsys.readouterr().out
+
+
+def test_module_entry_point_delegates_to_app_main(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    app = load_app_module(monkeypatch)
+    sys.modules.pop("vbart.__main__", None)
+
+    module = importlib.import_module("vbart.__main__")
+
+    assert module.main is app.main
 
 
 def test_main_dispatches_selected_command(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -6,7 +6,8 @@ restoring Docker named volumes.
 ## Scope
 
 - Runtime package code lives under `src/vbart/`.
-- CLI entry point is `src/vbart/app.py`.
+- Runnable module entry point is `src/vbart/__main__.py`.
+- CLI parser and dispatch code lives in `src/vbart/app.py`.
 - Command implementations live in:
   - `src/vbart/backup.py`
   - `src/vbart/backups.py`
