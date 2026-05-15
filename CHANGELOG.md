@@ -1,4 +1,8 @@
-## 0.3.4 (2026-05-15)
+## 0.3.5 (2026-05-15)
+
+### 🐛 Bug Fixes
+
+- Fix CI pipeline trigger (f640220)
 
 ### 📦 Dependency Upgrades
 
