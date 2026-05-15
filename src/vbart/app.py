@@ -70,13 +70,12 @@ def verify_docker_runtime() -> None:
 
 def main() -> None:
     """Parse CLI arguments and dispatch the selected command."""
-    verify_docker_runtime()
-
     msg = """
     Back up and restore named Docker volumes.
     """
     epi = f"Version: {__version__}"
     parser = argparse.ArgumentParser(
+        prog=APP_NAME,
         description=msg,
         epilog=epi,
     )
@@ -108,6 +107,7 @@ def main() -> None:
     # entered command.
 
     args = parser.parse_args()
+    verify_docker_runtime()
     if args.cmd:
         mod = importlib.import_module(f"{APP_NAME}.{args.cmd}")
     else:

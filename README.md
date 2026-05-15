@@ -70,6 +70,12 @@ For an overview, run:
 vbart -h
 ```
 
+The package can also be run as a module:
+
+```text
+python -m vbart -h
+```
+
 ### Backup a Single Volume
 
 ```text

@@ -6,7 +6,8 @@ restoring Docker named volumes.
 ## Scope
 
 - Runtime package code lives under `src/vbart/`.
-- CLI entry point is `src/vbart/app.py`.
+- Runnable module entry point is `src/vbart/__main__.py`.
+- CLI parser and dispatch code lives in `src/vbart/app.py`.
 - Command implementations live in:
   - `src/vbart/backup.py`
   - `src/vbart/backups.py`
@@ -78,6 +79,21 @@ restoring Docker named volumes.
   default stable install target.
 - PyPI publishing remains a separate manual workflow through
   `just publish-test` and `just publish-production`.
+
+## Dependency Maintenance
+
+- Run `just upgrade` only from a clean Git worktree.
+- The upgrade command creates one local commit titled
+  `deps: Dependency Upgrades` when first-order locked dependency
+  versions change.
+- The commit body lists changed first-order dependencies as
+  `old -> new` locked version pairs.
+- The command stages only dependency files, does not push, and leaves
+  review and manual pushing to the maintainer.
+- No commit is created when only transitive dependencies change or when
+  no first-order dependency versions change.
+- Use `deps:` as the shared dependency-upgrade changelog prefix.
+- Use `deprecate:` or `deprecated:` for deprecated changelog entries.
 
 ## Verification
 

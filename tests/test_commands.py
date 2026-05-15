@@ -134,7 +134,9 @@ def test_restore_task_runner_restores_new_volume(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    client = FakeClient(volumes=FakeVolumes(existing_names=[]), containers=FakeContainers())
+    client = FakeClient(
+        volumes=FakeVolumes(existing_names=[]), containers=FakeContainers()
+    )
     backup_file = tmp_path / "backup.xz"
     backup_file.write_bytes(b"data")
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
@@ -145,7 +147,10 @@ def test_restore_task_runner_restores_new_volume(
     assert client.volumes.create_calls == ["restored"]
     run_call = client.containers.run_calls[0]
     assert run_call["image"] == UTILITY_IMAGE
-    assert run_call["command"] == 'sh -c "cd /recover && tar xvf /backup/backup.xz --strip 1"'
+    assert (
+        run_call["command"]
+        == 'sh -c "cd /recover && tar xvf /backup/backup.xz --strip 1"'
+    )
     assert run_call["volumes"]["restored"]["bind"] == "/recover"
     backup_root = restore.normalize_bind_source(tmp_path)
     assert run_call["volumes"][backup_root]["bind"] == "/backup"
@@ -199,7 +204,10 @@ def test_refresh_task_runner_removes_dangling_containers_and_image(
     assert client.containers.list_calls == [
         {"all": True, "filters": {"ancestor": f"{UTILITY_IMAGE}:latest"}}
     ]
-    assert [c.remove_calls for c in containers] == [[{"force": True}], [{"force": True}]]
+    assert [c.remove_calls for c in containers] == [
+        [{"force": True}],
+        [{"force": True}],
+    ]
     assert client.images.remove_calls == [UTILITY_IMAGE]
     assert "2 dangling containers removed." in capsys.readouterr().out
 
