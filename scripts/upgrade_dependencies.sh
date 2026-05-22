@@ -14,8 +14,10 @@ fi
 
 before_versions="$(mktemp)"
 commit_message="$(mktemp)"
+outdated_tree="$(mktemp)"
+upgrade_packages="$(mktemp)"
 cleanup() {
-    rm -f "$before_versions" "$commit_message"
+    rm -f "$before_versions" "$commit_message" "$outdated_tree" "$upgrade_packages"
 }
 trap cleanup EXIT
 
@@ -24,10 +26,27 @@ uv run --with tomli python scripts/dependency_upgrade_commit.py snapshot \
     --output "$before_versions"
 
 if [ -f .init/dev ]; then
-    uv sync --upgrade --all-groups
+    dependency_scope=(--all-groups)
 else
-    uv sync --upgrade --no-dev
+    dependency_scope=(--no-dev)
 fi
+
+uv tree --outdated --depth=1 "${dependency_scope[@]}" > "$outdated_tree"
+uv run --with tomli python scripts/dependency_upgrade_commit.py outdated \
+    --pyproject pyproject.toml \
+    < "$outdated_tree" > "$upgrade_packages"
+
+if [ ! -s "$upgrade_packages" ]; then
+    echo "No outdated first-order dependencies found; no commit created."
+    exit 0
+fi
+
+upgrade_args=()
+while IFS= read -r package; do
+    upgrade_args+=(--upgrade-package "$package")
+done < "$upgrade_packages"
+
+uv sync "${dependency_scope[@]}" "${upgrade_args[@]}"
 
 if ! uv run --with tomli python scripts/dependency_upgrade_commit.py message \
     --pyproject pyproject.toml \
