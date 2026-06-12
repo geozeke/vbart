@@ -13,15 +13,16 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-try:
+if sys.version_info >= (3, 11):
     import tomllib
-except ModuleNotFoundError:  # pragma: no cover - exercised on Python 3.10.
+else:
     import tomli as tomllib
 
 COMMIT_SUBJECT = "deps: DEPS-See commit msg for list"
 NAME_PATTERN = re.compile(r"^\s*([A-Za-z0-9_.-]+)")
 OUTDATED_TREE_PATTERN = re.compile(
-    r"^[\s│]*[├└]── (?P<name>[A-Za-z0-9_.-]+) v\S+ .*latest:"
+    r"^[\s│]*(?:[├└]── )?(?P<name>[A-Za-z0-9_.-]+)"
+    r"(?:\[[^\]]+\])? v\S+ .*latest:"
 )
 
 
@@ -57,7 +58,6 @@ def normalize_name(name: str) -> str:
     str
         The normalized distribution name.
     """
-
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
@@ -79,7 +79,6 @@ def dependency_name(requirement: str) -> str:
     ValueError
         If the requirement does not start with a distribution name.
     """
-
     match = NAME_PATTERN.match(requirement)
     if not match:
         msg = f"Could not parse dependency name from {requirement!r}"
@@ -100,7 +99,6 @@ def first_order_dependencies(pyproject_path: Path) -> dict[str, str]:
     dict[str, str]
         Normalized dependency names mapped to their declared names.
     """
-
     metadata = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
     dependencies: dict[str, str] = {}
 
@@ -129,7 +127,6 @@ def locked_versions(lock_path: Path) -> dict[str, str]:
     dict[str, str]
         Normalized package names mapped to locked versions.
     """
-
     lock_data = tomllib.loads(lock_path.read_text(encoding="utf-8"))
     versions: dict[str, str] = {}
     for package in lock_data.get("package", []):
@@ -163,7 +160,6 @@ def dependency_updates(
     list[DependencyUpdate]
         Changed first-order dependency versions.
     """
-
     updates: list[DependencyUpdate] = []
     for normalized_name, display_name in dependencies.items():
         old_version = before_versions.get(normalized_name)
@@ -192,7 +188,6 @@ def render_commit_message(updates: list[DependencyUpdate]) -> str:
     str
         The complete commit message.
     """
-
     lines = [COMMIT_SUBJECT, ""]
     lines.extend(
         f"- {update.name}: {update.old_version} -> {update.new_version}"
@@ -220,7 +215,6 @@ def outdated_first_order_packages(
         Outdated first-order package names to pass to ``uv sync
         --upgrade-package``.
     """
-
     packages: list[str] = []
     seen: set[str] = set()
     for line in tree_output.splitlines():
@@ -263,14 +257,13 @@ def _outdated(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Build the command line parser.
+    """Build the command-line parser.
 
     Returns
     -------
     argparse.ArgumentParser
         The configured argument parser.
     """
-
     parser = argparse.ArgumentParser(
         description="Build dependency upgrade commit messages.",
     )
@@ -296,19 +289,18 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run the command line interface.
+    """Run the command-line interface.
 
     Parameters
     ----------
     argv
-        Optional command line arguments.
+        Optional command-line arguments.
 
     Returns
     -------
     int
         Process exit code.
     """
-
     parser = build_parser()
     args = parser.parse_args(argv)
     return int(args.func(args))
