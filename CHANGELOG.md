@@ -1,3 +1,23 @@
+## 0.3.6 (2026-07-03)
+
+### 🐛 Bug Fixes
+
+- Lint tooling. (7d6acb1)
+
+### 🗑️ Removed
+
+- Remove "dev" recipe from justfile (857e6c3)
+
+### 📦 Dependency Upgrades
+
+- DEPS-See commit msg for list (41f0d90)
+- DEPS-See commit msg for list (edaea55)
+- DEPS-See commit msg for list (c441335)
+
+### ⚙️ Miscellaneous Tasks
+
+- Housekeeping (#52) (583088e)
+
 ## 0.3.5 (2026-05-15)
 
 ### 🐛 Bug Fixes
