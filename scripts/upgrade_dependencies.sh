@@ -25,11 +25,7 @@ uv run --with tomli python scripts/dependency_upgrade_commit.py snapshot \
     --lockfile uv.lock \
     --output "$before_versions"
 
-if [ -f .init/dev ]; then
-    dependency_scope=(--all-groups)
-else
-    dependency_scope=(--no-dev)
-fi
+dependency_scope=(--all-groups)
 
 uv tree --outdated --depth=1 "${dependency_scope[@]}" > "$outdated_tree"
 uv run --with tomli python scripts/dependency_upgrade_commit.py outdated \

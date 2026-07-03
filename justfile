@@ -91,15 +91,6 @@ coverage-open: coverage
 
 # --------------------------------------------
 
-# Provision development dependencies
-dev: _require_setup
-    #!/usr/bin/env bash
-    export UV_PYTHON_PREFERENCE=only-managed
-    uv sync --all-groups --frozen
-    touch .init/dev
-
-# --------------------------------------------
-
 # Show available recipes
 help:
     @just --list
@@ -164,7 +155,7 @@ setup:
         mkdir -p scratch .init
         touch .init/setup
         export UV_PYTHON_PREFERENCE=only-managed
-        uv sync --frozen --no-dev
+        uv sync --frozen --all-groups
     else
         echo "Initial setup is already complete. If you are having issues, run:"
         echo
@@ -178,11 +169,7 @@ setup:
 # Sync dependencies with the lockfile (frozen)
 sync: _require_setup
     #!/usr/bin/env bash
-    if [ -f .init/dev ]; then
-        uv sync --all-groups
-    else
-        uv sync --no-dev
-    fi
+    uv sync --all-groups
 
 # --------------------------------------------
 
@@ -214,7 +201,7 @@ typecheck:
 outdated:
     #!/usr/bin/env bash
     export UV_CACHE_DIR="${UV_CACHE_DIR:-.uv-cache}"
-    uv tree --outdated --depth=1 | awk '
+    uv tree --outdated --depth=1 --all-groups | awk '
         /latest/ {
             found = 1
             print
