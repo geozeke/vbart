@@ -3,11 +3,18 @@
 import tempfile as tf
 from datetime import datetime as dt
 from pathlib import Path
+from pathlib import PurePosixPath
+import shlex
+from typing import Any
 
 from docker import errors  # type:ignore
 
+from vbart.compression import DEFAULT_COMPRESSION
+from vbart.compression import get_compression
 from vbart.constants import BASE_IMAGE
 from vbart.constants import FAIL
+from vbart.constants import HELPER_IMAGE_VERSION
+from vbart.constants import HELPER_IMAGE_VERSION_LABEL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
 from vbart.runtime import get_docker_client
@@ -27,8 +34,9 @@ def verify_utility_image() -> None:
 
     client = get_docker_client()
     try:
-        client.images.get(UTILITY_IMAGE)
-        return
+        image = client.images.get(UTILITY_IMAGE)
+        if helper_image_is_current(image):
+            return
     except errors.ImageNotFound:
         pass
 
@@ -76,22 +84,48 @@ def render_helper_dockerfile() -> str:
     """Render the helper-image Dockerfile from runtime constants."""
     return (
         f"FROM {BASE_IMAGE}\n"
+        f'LABEL {HELPER_IMAGE_VERSION_LABEL}="{HELPER_IMAGE_VERSION}"\n'
         "RUN apk -U upgrade\n"
-        "# Add support for xz compression\n"
-        "RUN apk add --no-cache xz\n"
+        "# Add support for selectable backup compression.\n"
+        "RUN apk add --no-cache 7zip bzip2 bzip3 gzip tar unzip xz zip zstd\n"
     )
 
 
 # ======================================================================
 
 
-def backup_one_volume(volume: str) -> str:
+def helper_image_is_current(image: Any) -> bool:
+    """Return whether an existing helper image matches this version.
+
+    Parameters
+    ----------
+    image : Any
+        Docker image object returned by the Docker SDK.
+
+    Returns
+    -------
+    bool
+        ``True`` when the image has the expected helper-version label.
+    """
+    labels = getattr(image, "attrs", {}).get("Config", {}).get("Labels") or {}
+    return labels.get(HELPER_IMAGE_VERSION_LABEL) == HELPER_IMAGE_VERSION
+
+
+# ======================================================================
+
+
+def backup_one_volume(
+    volume: str,
+    compression_name: str = DEFAULT_COMPRESSION,
+) -> str:
     """Back up a single named volume.
 
     Parameters
     ----------
     volume : str
         Name of the volume to back up.
+    compression_name : str
+        Compression algorithm to use.
 
     Returns
     -------
@@ -101,19 +135,22 @@ def backup_one_volume(volume: str) -> str:
     client = get_docker_client()
     now = dt.now()
     prefix = f"{now.year}{now.month:02d}{now.day:02d}"
-    p = Path(f"{prefix}-{volume}-backup.xz")
+    compression = get_compression(compression_name)
+    p = Path(f"{prefix}-{volume}-backup{compression.suffix}")
     volume_map = {
         volume: {"bind": "/recover", "mode": "rw"},
         normalize_bind_source(p.parent): {"bind": "/backup", "mode": "rw"},
     }
-    cmd = f"tar cavf /backup/{p.name} /recover"
+    backup_path = PurePosixPath("/backup") / p.name
+    shell_arg = shlex.quote(compression.backup_command(backup_path))
+    shell_cmd = f"sh -c {shell_arg}"
 
     # Run the container and perform the backup.
 
     try:
         client.containers.run(
             image=UTILITY_IMAGE,
-            command=cmd,
+            command=shell_cmd,
             remove=True,
             volumes=volume_map,  # type:ignore
         )

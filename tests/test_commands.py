@@ -28,11 +28,17 @@ def test_backup_task_runner_backs_up_existing_volume(
     client = FakeClient(volumes=FakeVolumes(existing_names=["mysql_db"]))
     monkeypatch.setattr(backup, "verify_utility_image", lambda: None)
     monkeypatch.setattr(backup, "get_docker_client", lambda: client)
-    monkeypatch.setattr(backup, "backup_one_volume", lambda name: "RESULT")
+    monkeypatch.setattr(
+        backup,
+        "backup_one_volume",
+        lambda name, compression: f"{name}:{compression}",
+    )
 
-    backup.task_runner(Namespace(volume_name="mysql_db"))
+    backup.task_runner(Namespace(volume_name="mysql_db", compression="gzip"))
 
-    assert 'Backing up volume "mysql_db"' in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert 'Backing up volume "mysql_db"' in out
+    assert "mysql_db:gzip" in out
 
 
 def test_backup_task_runner_exits_for_missing_volume(
@@ -61,12 +67,12 @@ def test_backups_task_runner_uses_sorted_active_volumes(
     monkeypatch.setattr(
         backups,
         "backup_one_volume",
-        lambda name: backed_up.append(name) or "OK",
+        lambda name, compression: backed_up.append(f"{name}:{compression}") or "OK",
     )
 
-    backups.task_runner(Namespace(volumes=None))
+    backups.task_runner(Namespace(volumes=None, compression="xz"))
 
-    assert backed_up == ["alpha", "zeta"]
+    assert backed_up == ["alpha:xz", "zeta:xz"]
     assert "Backing up all active Docker volumes" in capsys.readouterr().out
 
 
@@ -84,12 +90,12 @@ def test_backups_task_runner_filters_from_file(
     monkeypatch.setattr(
         backups,
         "backup_one_volume",
-        lambda name: backed_up.append(name) or "OK",
+        lambda name, compression: backed_up.append(f"{name}:{compression}") or "OK",
     )
 
-    backups.task_runner(Namespace(volumes=volume_list))
+    backups.task_runner(Namespace(volumes=volume_list, compression="zstd"))
 
-    assert backed_up == ["db"]
+    assert backed_up == ["db:zstd"]
     assert f"Performing backups using {volume_list}" in capsys.readouterr().out
 
 
@@ -115,7 +121,7 @@ def test_restore_task_runner_exits_when_target_exists(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     client = FakeClient(volumes=FakeVolumes(existing_names=["restored"]))
-    backup_file = tmp_path / "backup.xz"
+    backup_file = tmp_path / "backup.tar.xz"
     backup_file.write_bytes(b"data")
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
     monkeypatch.setattr(restore, "get_docker_client", lambda: client)
@@ -137,7 +143,7 @@ def test_restore_task_runner_restores_new_volume(
     client = FakeClient(
         volumes=FakeVolumes(existing_names=[]), containers=FakeContainers()
     )
-    backup_file = tmp_path / "backup.xz"
+    backup_file = tmp_path / "backup.tar.xz"
     backup_file.write_bytes(b"data")
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
     monkeypatch.setattr(restore, "get_docker_client", lambda: client)
@@ -149,12 +155,44 @@ def test_restore_task_runner_restores_new_volume(
     assert run_call["image"] == UTILITY_IMAGE
     assert (
         run_call["command"]
-        == 'sh -c "cd /recover && tar xvf /backup/backup.xz --strip 1"'
+        == "sh -c 'set -e; cd /recover && xz -cd /backup/backup.tar.xz | "
+        "tar -xf - --strip 1'"
     )
     assert run_call["volumes"]["restored"]["bind"] == "/recover"
     backup_root = restore.normalize_bind_source(tmp_path)
     assert run_call["volumes"][backup_root]["bind"] == "/backup"
     assert capsys.readouterr().out.endswith("✅\n")
+
+
+@pytest.mark.parametrize(
+    ("suffix", "fragment"),
+    [
+        (".tar.gz", "gzip -cd /backup/backup.tar.gz | tar -xf - --strip 1"),
+        (".tar.xz", "xz -cd /backup/backup.tar.xz | tar -xf - --strip 1"),
+        (".tar.zst", "zstd -cd /backup/backup.tar.zst | tar -xf - --strip 1"),
+        (".tar.bz2", "bzip2 -cd /backup/backup.tar.bz2 | tar -xf - --strip 1"),
+        (".tar.bz3", "bzip3 -cd /backup/backup.tar.bz3 | tar -xf - --strip 1"),
+        (".tar.7z", "7zz x -o/tmp/vbart-restore /backup/backup.tar.7z"),
+        (".tar.zip", "unzip -p /backup/backup.tar.zip | tar -xf - --strip 1"),
+    ],
+)
+def test_restore_task_runner_selects_compression_from_suffix(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    suffix: str,
+    fragment: str,
+) -> None:
+    client = FakeClient(
+        volumes=FakeVolumes(existing_names=[]), containers=FakeContainers()
+    )
+    backup_file = tmp_path / f"backup{suffix}"
+    backup_file.write_bytes(b"data")
+    monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
+    monkeypatch.setattr(restore, "get_docker_client", lambda: client)
+
+    restore.task_runner(Namespace(backup_file=backup_file, volume_name="restored"))
+
+    assert fragment in client.containers.run_calls[0]["command"]
 
 
 def test_restore_task_runner_removes_created_volume_on_invalid_backup(
@@ -174,7 +212,7 @@ def test_restore_task_runner_removes_created_volume_on_invalid_backup(
             ),
         ),
     )
-    backup_file = tmp_path / "backup.xz"
+    backup_file = tmp_path / "backup.tar.xz"
     backup_file.write_bytes(b"data")
     monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
     monkeypatch.setattr(restore, "get_docker_client", lambda: client)
@@ -186,6 +224,25 @@ def test_restore_task_runner_removes_created_volume_on_invalid_backup(
     created_volume = client.volumes.by_name["restored"]
     assert created_volume.remove_calls == [{}]
     assert "Invalid backup file provided. Unable to restore." in capsys.readouterr().out
+
+
+def test_restore_task_runner_rejects_unsupported_backup_suffix(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    client = FakeClient(volumes=FakeVolumes(existing_names=[]))
+    backup_file = tmp_path / "backup.rar"
+    backup_file.write_bytes(b"data")
+    monkeypatch.setattr(restore, "verify_utility_image", lambda: None)
+    monkeypatch.setattr(restore, "get_docker_client", lambda: client)
+
+    with pytest.raises(SystemExit) as exc:
+        restore.task_runner(Namespace(backup_file=backup_file, volume_name="restored"))
+
+    assert exc.value.code == 1
+    assert client.volumes.create_calls == []
+    assert "unsupported compression format" in capsys.readouterr().out
 
 
 def test_refresh_task_runner_removes_dangling_containers_and_image(

@@ -31,7 +31,7 @@ def task_runner(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     labels.next()
-    print(backup_one_volume(args.volume_name))
+    print(backup_one_volume(args.volume_name, args.compression))
 
     return
 

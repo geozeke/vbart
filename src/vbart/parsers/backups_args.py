@@ -3,6 +3,9 @@
 from argparse import _SubParsersAction
 from pathlib import Path
 
+from vbart.compression import DEFAULT_COMPRESSION
+from vbart.compression import SUPPORTED_COMPRESSIONS
+
 COMMAND_NAME = "backups"
 
 
@@ -21,12 +24,21 @@ def load_command_args(sp: _SubParsersAction) -> None:
     specify a file containing individual volume names (one per line) and
     back up only those volumes. When processing a file of
     volume names, blank lines and lines beginning with '#' will be
-    ignored. Each backup archive will be named:
-    YYYYMMDD-{volume_name}-backup.xz"""
+    ignored. Each backup archive name will begin:
+    YYYYMMDD-{volume_name}-backup"""
     parser.add_argument(
         "-v",
         "--volumes",
         type=Path,
+        help=msg,
+    )
+
+    msg = """Compression algorithm to use. The default is gzip."""
+    parser.add_argument(
+        "-c",
+        "--compression",
+        choices=SUPPORTED_COMPRESSIONS,
+        default=DEFAULT_COMPRESSION,
         help=msg,
     )
 

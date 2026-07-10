@@ -28,8 +28,8 @@ With vbart, you can:
 * Backup just the volumes you list in a separate file.
 * Restore a single backup to a named volume.
 
-All backups are stored as compressed `xz` tar archives. Once you create
-a backup, you can copy it off-host or restore it on another machine.
+Backups are stored as compressed tar archives. Once you create a
+backup, you can copy it off-host or restore it on another machine.
 
 ### Installation
 
@@ -79,7 +79,7 @@ python -m vbart -h
 ### Backup a Single Volume
 
 ```text
-vbart backup volume_name
+vbart backup [-c COMPRESSION] volume_name
 ```
 
 For example, to back up a volume named `mysql_db`, use:
@@ -92,13 +92,23 @@ vbart will then create a backup file in your current working directory
 named:
 
 ```text
-YYYYMMDD-mysql_db-backup.xz
+YYYYMMDD-mysql_db-backup.tar.gz
 ```
+
+The default compression algorithm is `gzip`. Use `--compression` (or
+`-c`) to choose another supported algorithm:
+
+```text
+vbart backup --compression zstd mysql_db
+```
+
+Supported values are `gzip`, `xz`, `zstd`, `bzip2`, `bzip3`, `7z`, and
+`zip`.
 
 ### Backup Multiple Volumes
 
 ```text
-vbart backups [-v VOLUMES]
+vbart backups [-v VOLUMES] [-c COMPRESSION]
 ```
 
 Note the plural command name (`backups` as opposed to `backup`).
@@ -112,8 +122,11 @@ host are backed up. All volume backups are saved in the current working
 directory and named:
 
 ```text
-YYYYMMDD-{volume_name}-backup.xz
+YYYYMMDD-{volume_name}-backup.tar.gz
 ```
+
+Use `--compression` (or `-c`) to choose the compression algorithm for
+all archives created by the command.
 
 ### Restore a Single Volume
 
@@ -122,7 +135,9 @@ vbart restore backup_file volume_name
 ```
 
 The first argument (`backup_file`) is the compressed tar archive you
-created when you made a backup. The file must have a `.xz` extension.
+created when you made a backup. vbart detects the compression format
+from supported suffixes such as `.tar.gz`, `.tar.xz`, `.tar.zst`,
+`.tar.bz2`, `.tar.bz3`, `.tar.7z`, and `.tar.zip`.
 
 The second argument (`volume_name`) is the named volume to create from
 the backup. If the named volume already exists, vbart will terminate

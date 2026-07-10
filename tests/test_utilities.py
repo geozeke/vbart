@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any
 from typing import cast
 
@@ -13,6 +14,8 @@ from tests.conftest import FakeContainers
 from tests.conftest import FakeImages
 from tests.conftest import FakeSavedImage
 from vbart.constants import BASE_IMAGE
+from vbart.constants import HELPER_IMAGE_VERSION
+from vbart.constants import HELPER_IMAGE_VERSION_LABEL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
 from vbart import utilities
@@ -94,6 +97,28 @@ def test_verify_utility_image_builds_and_flattens_helper_image(
     )
 
 
+def test_verify_utility_image_rebuilds_stale_helper_image(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    images = FakeImages(
+        existing={
+            BASE_IMAGE: object(),
+            UTILITY_IMAGE: FakeSavedImage(labels={}),
+        },
+    )
+    client = FakeClient(images=images)
+    monkeypatch.setattr(utilities, "get_docker_client", lambda: client)
+    monkeypatch.setattr(
+        utilities,
+        "render_helper_dockerfile",
+        lambda: "FROM alpine:3.23\n",
+    )
+
+    utilities.verify_utility_image()
+
+    assert images.build_calls[0]["tag"] == f"{UTILITY_IMAGE}:latest"
+
+
 def test_verify_utility_image_removes_pulled_base_image(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -126,27 +151,57 @@ def test_render_helper_dockerfile_uses_base_image_constant() -> None:
     dockerfile = utilities.render_helper_dockerfile()
 
     assert dockerfile.startswith("FROM alpine:3.23\n")
-    assert "apk add --no-cache xz" in dockerfile
+    assert f'{HELPER_IMAGE_VERSION_LABEL}="{HELPER_IMAGE_VERSION}"' in dockerfile
+    assert (
+        "apk add --no-cache 7zip bzip2 bzip3 gzip tar unzip xz zip zstd" in dockerfile
+    )
 
 
+@pytest.mark.parametrize(
+    ("compression", "suffix", "fragment"),
+    [
+        ("gzip", ".tar.gz", "gzip -c >"),
+        ("xz", ".tar.xz", "xz -c >"),
+        ("zstd", ".tar.zst", "zstd -c >"),
+        ("bzip2", ".tar.bz2", "bzip2 -c >"),
+        ("bzip3", ".tar.bz3", "bzip3 -c >"),
+        ("7z", ".tar.7z", "7zz a"),
+        ("zip", ".tar.zip", "zip -q"),
+    ],
+)
 def test_backup_one_volume_builds_expected_command(
     monkeypatch: pytest.MonkeyPatch,
+    compression: str,
+    suffix: str,
+    fragment: str,
 ) -> None:
     client = FakeClient(containers=FakeContainers())
     monkeypatch.setattr(utilities, "get_docker_client", lambda: client)
     monkeypatch.setattr(utilities, "dt", FrozenDateTime)
 
-    result = utilities.backup_one_volume("mysql_db")
+    result = utilities.backup_one_volume("mysql_db", compression)
 
     assert result == PASS
     run_call = client.containers.run_calls[0]
-    assert (
-        run_call["command"] == "tar cavf /backup/20260420-mysql_db-backup.xz /recover"
-    )
+    command = run_call["command"]
+    assert command.startswith("sh -c ")
+    assert f"/backup/20260420-mysql_db-backup{suffix}" in command
+    assert "tar -cf - /recover" in command
+    assert fragment in command
     assert run_call["image"] == UTILITY_IMAGE
     assert run_call["volumes"]["mysql_db"]["bind"] == "/recover"
     backup_root = utilities.normalize_bind_source(utilities.Path("."))
     assert run_call["volumes"][backup_root]["bind"] == "/backup"
+
+
+def test_compression_commands_use_posix_container_paths() -> None:
+    compression = utilities.get_compression("gzip")
+    container_path = PurePosixPath("/backup") / "backup.tar.gz"
+
+    command = compression.backup_command(container_path)
+
+    assert "/backup/backup.tar.gz" in command
+    assert "\\backup\\backup.tar.gz" not in command
 
 
 def test_backup_one_volume_returns_fail_on_container_error(
