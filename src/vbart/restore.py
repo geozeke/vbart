@@ -4,6 +4,7 @@ import argparse
 import shlex
 import sys
 from pathlib import Path
+from pathlib import PurePosixPath
 
 from docker import errors  # type:ignore
 
@@ -55,7 +56,8 @@ def task_runner(args: argparse.Namespace) -> None:
 
     # Build the shell command to be run in the container
 
-    shell_arg = shlex.quote(compression.restore_command(Path("/backup") / p.name))
+    backup_path = PurePosixPath("/backup") / p.name
+    shell_arg = shlex.quote(compression.restore_command(backup_path))
     shell_cmd = f"sh -c {shell_arg}"
 
     # Run the container and extract the backup.

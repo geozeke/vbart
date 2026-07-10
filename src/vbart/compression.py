@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from pathlib import PurePosixPath
 import shlex
 
 
@@ -46,12 +47,12 @@ class Compression:
     extract_command: str
     restore_template: str | None = None
 
-    def backup_command(self, target: Path) -> str:
+    def backup_command(self, target: PurePosixPath) -> str:
         """Return the shell command that creates a compressed backup.
 
         Parameters
         ----------
-        target : Path
+        target : PurePosixPath
             Backup archive path inside the helper container.
 
         Returns
@@ -65,12 +66,12 @@ class Compression:
             f"tar -cf - /recover | {self.compress_command.format(target=quoted_target)}"
         )
 
-    def restore_command(self, source: Path) -> str:
+    def restore_command(self, source: PurePosixPath) -> str:
         """Return the shell command that restores a compressed backup.
 
         Parameters
         ----------
-        source : Path
+        source : PurePosixPath
             Backup archive path inside the helper container.
 
         Returns

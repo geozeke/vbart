@@ -3,6 +3,7 @@
 import tempfile as tf
 from datetime import datetime as dt
 from pathlib import Path
+from pathlib import PurePosixPath
 import shlex
 from typing import Any
 
@@ -140,7 +141,8 @@ def backup_one_volume(
         volume: {"bind": "/recover", "mode": "rw"},
         normalize_bind_source(p.parent): {"bind": "/backup", "mode": "rw"},
     }
-    shell_arg = shlex.quote(compression.backup_command(Path("/backup") / p.name))
+    backup_path = PurePosixPath("/backup") / p.name
+    shell_arg = shlex.quote(compression.backup_command(backup_path))
     shell_cmd = f"sh -c {shell_arg}"
 
     # Run the container and perform the backup.

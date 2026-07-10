@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any
 from typing import cast
 
@@ -191,6 +192,16 @@ def test_backup_one_volume_builds_expected_command(
     assert run_call["volumes"]["mysql_db"]["bind"] == "/recover"
     backup_root = utilities.normalize_bind_source(utilities.Path("."))
     assert run_call["volumes"][backup_root]["bind"] == "/backup"
+
+
+def test_compression_commands_use_posix_container_paths() -> None:
+    compression = utilities.get_compression("gzip")
+    container_path = PurePosixPath("/backup") / "backup.tar.gz"
+
+    command = compression.backup_command(container_path)
+
+    assert "/backup/backup.tar.gz" in command
+    assert "\\backup\\backup.tar.gz" not in command
 
 
 def test_backup_one_volume_returns_fail_on_container_error(
