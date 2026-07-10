@@ -52,10 +52,17 @@ def test_get_docker_client_validates_runtime(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     client = FakeClient(info_data={"OSType": "linux"})
+    from_env_calls: list[dict[str, object]] = []
+
+    def from_env(**kwargs: object) -> FakeClient:
+        from_env_calls.append(kwargs)
+        return client
+
     monkeypatch.setattr(runtime.sys, "platform", "win32")
-    monkeypatch.setattr(runtime.docker, "from_env", lambda: client)
+    monkeypatch.setattr(runtime.docker, "from_env", from_env)
 
     result = runtime.get_docker_client()
 
     assert result is client
+    assert from_env_calls == [{"use_context": False}]
     assert client.ping_calls == 1
