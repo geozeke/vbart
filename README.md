@@ -62,6 +62,12 @@ vbart supports:
 
 Windows container mode is not supported.
 
+vbart honors Docker connection environment variables such as
+`DOCKER_HOST`, `DOCKER_TLS_VERIFY`, and `DOCKER_CERT_PATH`. It does not
+follow `DOCKER_CONTEXT` or the Docker CLI `currentContext`; set
+`DOCKER_HOST` explicitly when you need to target a non-default Docker
+daemon.
+
 ### Usage
 
 For an overview, run:

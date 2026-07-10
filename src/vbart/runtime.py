@@ -49,7 +49,9 @@ def validate_runtime_mode(client: SupportsDockerInfo) -> None:
 
 def get_docker_client() -> docker.DockerClient:  # type: ignore
     """Return a Docker client after validating runtime availability."""
-    client = docker.from_env()
+    # Preserve pre-7.2.0 Docker SDK behavior: vbart honors Docker
+    # environment variables, but does not follow Docker CLI contexts.
+    client = docker.from_env(use_context=False)
     client.ping()
     validate_runtime_mode(client)
     return client
