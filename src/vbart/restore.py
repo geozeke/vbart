@@ -1,12 +1,14 @@
 """Command handler for restoring a Docker volume from a backup."""
 
 import argparse
+import shlex
 import sys
 from pathlib import Path
 
 from docker import errors  # type:ignore
 
 from vbart.classes import Labels
+from vbart.compression import compression_from_path
 from vbart.constants import FAIL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
@@ -23,6 +25,11 @@ def task_runner(args: argparse.Namespace) -> None:
     args : Namespace
         Parsed command-line arguments.
     """
+    p = Path(args.backup_file)
+    compression = compression_from_path(p)
+    if not compression:
+        print(f'Backup file "{p}" uses an unsupported compression format.')
+        sys.exit(1)
     verify_utility_image()
     client = get_docker_client()
 
@@ -41,7 +48,6 @@ def task_runner(args: argparse.Namespace) -> None:
 
     # Build volume map.
 
-    p = Path(args.backup_file)
     volume_map = {
         args.volume_name: {"bind": "/recover", "mode": "rw"},
         normalize_bind_source(p.parent): {"bind": "/backup", "mode": "rw"},
@@ -49,7 +55,7 @@ def task_runner(args: argparse.Namespace) -> None:
 
     # Build the shell command to be run in the container
 
-    shell_arg = f'"cd /recover && tar xvf /backup/{p.name} --strip 1"'
+    shell_arg = shlex.quote(compression.restore_command(Path("/backup") / p.name))
     shell_cmd = f"sh -c {shell_arg}"
 
     # Run the container and extract the backup.

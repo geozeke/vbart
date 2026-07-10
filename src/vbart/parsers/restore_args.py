@@ -16,7 +16,7 @@ def load_command_args(sp: _SubParsersAction) -> None:
     )
 
     # Backup file.
-    msg = """The .xz backup archive to restore."""
+    msg = """The compressed backup archive to restore."""
     parser.add_argument(
         "backup_file",
         type=Path,

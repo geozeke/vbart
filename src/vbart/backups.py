@@ -39,7 +39,7 @@ def task_runner(args: argparse.Namespace) -> None:
         labels = Labels("\n".join(label_list))
         for name in target_names:
             labels.next()
-            print(backup_one_volume(name))
+            print(backup_one_volume(name, args.compression))
     else:
         if args.volumes:
             msg = f"""None of the volume names listed in

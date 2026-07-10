@@ -2,6 +2,9 @@
 
 from argparse import _SubParsersAction
 
+from vbart.compression import DEFAULT_COMPRESSION
+from vbart.compression import SUPPORTED_COMPRESSIONS
+
 COMMAND_NAME = "backup"
 
 
@@ -16,11 +19,20 @@ def load_command_args(sp: _SubParsersAction) -> None:
 
     # Volume name.
     msg = """The named Docker volume to back up. The backup archive
-    will be created in the current directory with the name:
-    YYYYMMDD-{volume_name}-backup.xz"""
+    will be created in the current directory with a name beginning:
+    YYYYMMDD-{volume_name}-backup"""
     parser.add_argument(
         "volume_name",
         type=str,
+        help=msg,
+    )
+
+    msg = """Compression algorithm to use. The default is gzip."""
+    parser.add_argument(
+        "-c",
+        "--compression",
+        choices=SUPPORTED_COMPRESSIONS,
+        default=DEFAULT_COMPRESSION,
         help=msg,
     )
 

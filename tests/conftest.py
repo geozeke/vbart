@@ -11,10 +11,24 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+from vbart.constants import HELPER_IMAGE_VERSION  # noqa: E402
+from vbart.constants import HELPER_IMAGE_VERSION_LABEL  # noqa: E402
+
 
 class FakeSavedImage:
-    def __init__(self, chunks: list[bytes] | None = None) -> None:
+    def __init__(
+        self,
+        chunks: list[bytes] | None = None,
+        labels: dict[str, str] | None = None,
+    ) -> None:
         self.chunks = chunks or [b"image-bytes"]
+        self.attrs = {
+            "Config": {
+                "Labels": labels
+                if labels is not None
+                else {HELPER_IMAGE_VERSION_LABEL: HELPER_IMAGE_VERSION}
+            }
+        }
 
     def save(self, named: bool = True):  # noqa: FBT001, FBT002
         yield from self.chunks

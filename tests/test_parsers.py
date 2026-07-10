@@ -23,6 +23,17 @@ def test_backup_parser_registers_volume_name() -> None:
 
     assert args.cmd == "backup"
     assert args.volume_name == "mysql_db"
+    assert args.compression == "gzip"
+
+
+def test_backup_parser_registers_compression_choice() -> None:
+    parser = build_parser()
+    subparsers = parser.add_subparsers(dest="cmd")
+    backup_args.load_command_args(subparsers)
+
+    args = parser.parse_args(["backup", "mysql_db", "--compression", "zstd"])
+
+    assert args.compression == "zstd"
 
 
 def test_backups_parser_registers_optional_volume_file(tmp_path: Path) -> None:
@@ -36,13 +47,24 @@ def test_backups_parser_registers_optional_volume_file(tmp_path: Path) -> None:
 
     assert args.cmd == "backups"
     assert args.volumes == volume_list
+    assert args.compression == "gzip"
+
+
+def test_backups_parser_registers_compression_choice() -> None:
+    parser = build_parser()
+    subparsers = parser.add_subparsers(dest="cmd")
+    backups_args.load_command_args(subparsers)
+
+    args = parser.parse_args(["backups", "-c", "bzip3"])
+
+    assert args.compression == "bzip3"
 
 
 def test_restore_parser_registers_backup_file_and_volume_name(tmp_path: Path) -> None:
     parser = build_parser()
     subparsers = parser.add_subparsers(dest="cmd")
     restore_args.load_command_args(subparsers)
-    backup_file = tmp_path / "backup.xz"
+    backup_file = tmp_path / "backup.tar.xz"
     backup_file.write_bytes(b"data")
 
     args = parser.parse_args(["restore", str(backup_file), "mysql_db"])
