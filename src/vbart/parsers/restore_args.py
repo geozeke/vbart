@@ -14,7 +14,6 @@ def load_command_args(sp: _SubParsersAction) -> None:
         help=msg,
         description="Restore a backup archive into a newly created named Docker volume.",
     )
-
     # Backup file.
     msg = """The compressed backup archive to restore."""
     parser.add_argument(
@@ -32,5 +31,3 @@ def load_command_args(sp: _SubParsersAction) -> None:
         type=str,
         help=msg,
     )
-
-    return

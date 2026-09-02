@@ -16,5 +16,3 @@ def load_command_args(sp: _SubParsersAction) -> None:
         image so it is rebuilt automatically the next time you use
         vbart.""",
     )
-
-    return

@@ -16,7 +16,6 @@ def load_command_args(sp: _SubParsersAction) -> None:
         help=msg,
         description="Create a compressed backup archive for one named Docker volume.",
     )
-
     # Volume name.
     msg = """The named Docker volume to back up. The backup archive
     will be created in the current directory with a name beginning:
@@ -35,5 +34,3 @@ def load_command_args(sp: _SubParsersAction) -> None:
         default=DEFAULT_COMPRESSION,
         help=msg,
     )
-
-    return

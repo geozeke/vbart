@@ -11,8 +11,8 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from vbart.constants import HELPER_IMAGE_VERSION  # noqa: E402
-from vbart.constants import HELPER_IMAGE_VERSION_LABEL  # noqa: E402
+from vbart.constants import HELPER_IMAGE_VERSION
+from vbart.constants import HELPER_IMAGE_VERSION_LABEL
 
 
 class FakeSavedImage:
@@ -30,7 +30,7 @@ class FakeSavedImage:
             }
         }
 
-    def save(self, named: bool = True):  # noqa: FBT001, FBT002
+    def save(self, named: bool = True):
         yield from self.chunks
 
 

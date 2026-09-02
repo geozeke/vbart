@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import shlex
 from dataclasses import dataclass
 from pathlib import Path
 from pathlib import PurePosixPath
-import shlex
-
 
 DEFAULT_COMPRESSION = "gzip"
 SUPPORTED_COMPRESSIONS = (

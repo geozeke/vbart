@@ -49,8 +49,6 @@ def task_runner(args: argparse.Namespace) -> None:
         else:
             print("No active Docker volumes found.")
 
-    return
-
 
 if __name__ == "__main__":
     pass

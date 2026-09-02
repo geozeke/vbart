@@ -17,7 +17,6 @@ def load_command_args(sp: _SubParsersAction) -> None:
         help=msg,
         description="Create compressed backup archives for multiple named Docker volumes.",
     )
-
     # Volume names.
     msg = """If no options are given, all named Docker volumes on the
     host will be backed up to the current directory. You can also
@@ -41,5 +40,3 @@ def load_command_args(sp: _SubParsersAction) -> None:
         default=DEFAULT_COMPRESSION,
         help=msg,
     )
-
-    return

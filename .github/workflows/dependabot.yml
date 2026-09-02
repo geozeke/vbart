@@ -1,0 +1,31 @@
+name: Dependabot automation
+
+on:
+  workflow_run:
+    workflows: [Dependabot metadata]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request_target' &&
+      github.repository == 'geozeke/vbart'
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: gh run download "$RUN_ID" --repo "$GH_REPO" --name dependabot-metadata --dir "$RUNNER_TEMP/dependabot"
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          METADATA_PATH: ${{ runner.temp }}/dependabot/dependabot-metadata.json
+        run: |
+          if ! jq --exit-status '.maintainer_changes == "false" and (.ecosystem | IN("uv", "github-actions")) and (.update_type | IN("version-update:semver-minor", "version-update:semver-patch"))' "$METADATA_PATH" > /dev/null; then exit 0; fi
+          gh pr merge --auto --squash "$(jq --raw-output .pr_url "$METADATA_PATH")"

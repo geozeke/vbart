@@ -2,38 +2,50 @@ name: CI
 
 on:
   pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  checks:
-    name: Checks (Python 3.10)
+  quality:
+    name: Quality (Python 3.10)
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.10"
-
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Install dependencies
-        run: uv sync --all-groups --frozen
-
-      - name: Run Ruff
-        run: uv run ruff check .
-
-      - name: Run mypy
-        run: uv run mypy src
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.29"
+      - uses: extractions/setup-just@v4
+      - run: uv sync --locked --all-groups
+      - name: Validate pull request title
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: uv run python -m scripts.check_commit_title "$PR_TITLE"
+      - run: just check
+      - name: Build distributions
+        run: |
+          uv build --sdist --no-sources
+          uv build --wheel --no-sources
+      - name: Smoke-test wheel
+        run: >-
+          uv run --isolated --no-project --no-cache --with dist/*.whl
+          -- python tests/package_smoke.py
+      - name: Smoke-test source distribution
+        run: >-
+          uv run --isolated --no-project --no-cache --with dist/*.tar.gz
+          -- python tests/package_smoke.py
 
   tests:
     name: Tests (${{ matrix.os }} / Python ${{ matrix.python-version }})
@@ -41,27 +53,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-        python-version:
-          - "3.10"
-          - "3.14"
-
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.14"]
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Install dependencies
-        run: uv sync --all-groups --frozen
-
-      - name: Run pytest
-        run: uv run pytest --tb=short
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.29"
+      - run: uv sync --locked --all-groups
+      - run: uv run pytest --tb=short

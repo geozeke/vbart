@@ -56,53 +56,39 @@ restoring Docker named volumes.
 ## Release Workflow
 
 - Update code and documentation before preparing a release.
-- Create a release branch, such as `release/v0.3.1`,
-  `release/v0.4.0-beta.1`, or `release/v0.4.0-rc.1`.
+- Use Conventional Commit pull-request titles. Preview user-facing release
+  notes with `just changelog`.
+- Create a release branch, such as `release/v0.5.0` or
+  `release/v0.5.0rc1`.
 - Run `just bump <version>` to update `CHANGELOG.md`, archived
   changelog files under `changelogs/`, `pyproject.toml`, and `uv.lock`.
-  Stable releases use versions such as `v0.4.0`; beta and release
-  candidate builds use SemVer prerelease versions such as
-  `v0.4.0-beta.1` and `v0.4.0-rc.1`.
+  Stable releases use versions such as `0.5.0`; prereleases use canonical
+  PEP 440 forms such as `0.5.0b1` and `0.5.0rc1`.
 - Commit the release changes, open a pull request, and merge it after
-  checks pass.
+  `just check` and CI pass.
 - Update local `main` with `git pull --ff-only origin main`.
-- Run `just tag-release` for only the version tag, or
-  `just tag-release-latest` when the mutable `latest` tag should also
-  move. Use `just tag-release` for beta and release candidate versions;
-  never move `latest` to a prerelease.
-- Pushing a `v...` version tag starts the GitHub Actions release
-  workflow, which creates a GitHub Release from the matching
-  `CHANGELOG.md` or `changelogs/` section. The workflow uses GitHub
-  Actions' built-in `GITHUB_TOKEN` with `contents: write`.
+- Run `just tag-release` to create and push one annotated version tag.
+- Pushing a `v...` version tag validates metadata, runs `just check`,
+  builds and smoke-tests distributions, and publishes prereleases to
+  TestPyPI or stable releases to PyPI through Trusted Publishing.
 - The `latest` tag is mutable and must not be treated as an immutable
-  release record. Use it only when that version should become the
-  default stable install target.
-- PyPI publishing remains a separate manual workflow through
-  `just publish-test` and `just publish-production`.
+  release record. CI moves it only after stable PyPI and GitHub release
+  publication succeed; it is never moved for prereleases.
+- Configure GitHub `testpypi` and `pypi` environments with matching
+  Trusted Publishers before the first release.
 
 ## Dependency Maintenance
 
-- Run `just upgrade` only from a clean Git worktree.
-- The upgrade command creates one local commit titled
-  `deps: Dependency Upgrades` when first-order locked dependency
-  versions change.
-- The commit body lists changed first-order dependencies as
-  `old -> new` locked version pairs.
-- The command upgrades only outdated first-order dependencies with
-  targeted package upgrade arguments; it must not run a blanket
-  transitive dependency upgrade.
-- The command stages only dependency files, does not push, and leaves
-  review and manual pushing to the maintainer.
-- No commit is created when only transitive dependencies change or when
-  no first-order dependency versions change.
-- Use `deps:` as the shared dependency-upgrade changelog prefix.
-- Use `deprecate:` or `deprecated:` for deprecated changelog entries.
+- Dependabot opens grouped weekly direct-dependency updates for uv and
+  GitHub Actions. Eligible minor and patch updates are squash-auto-merged
+  after their guarded metadata workflow succeeds.
 
 ## Verification
 
 - Read project metadata in `pyproject.toml` before changing packaging
   behavior.
 - Use `uv`/`just` workflows already defined in `justfile` when relevant.
+- Use `just check` for the complete local quality suite.
 - Prefer lightweight checks first:
   - `python -m vbart -h` or installed `vbart -h`
   - `ruff format`

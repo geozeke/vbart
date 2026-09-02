@@ -9,4 +9,3 @@ import argparse
 def task_runner(args: argparse.Namespace) -> None:
     """Print a usage reminder."""
     print("run 'vbart -h' for help.")
-    return

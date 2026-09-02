@@ -2,29 +2,94 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v[0-9]*'
+    tags: ["v*.*.*"]
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  release:
-    name: Create GitHub Release
+  build:
+    name: Validate and build release
     runs-on: ubuntu-latest
-
+    outputs:
+      prerelease: ${{ steps.metadata.outputs.prerelease }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.29"
+      - uses: extractions/setup-just@v4
+      - run: uv sync --locked --all-groups
+      - id: metadata
+        run: uv run python -m scripts.validate_release "$GITHUB_REF_NAME" --github-output "$GITHUB_OUTPUT"
+      - run: just check
+      - run: |
+          uv build --sdist --no-sources
+          uv build --wheel --no-sources
+      - run: uv run --isolated --no-project --no-cache --with dist/*.whl -- python tests/package_smoke.py
+      - run: uv run --isolated --no-project --no-cache --with dist/*.tar.gz -- python tests/package_smoke.py
+      - run: uv run python -m scripts.extract_release_notes "$GITHUB_REF_NAME" .release-notes.md
+      - uses: actions/upload-artifact@v7
+        with:
+          name: python-package-distributions
+          path: |
+            dist/
+            .release-notes.md
+          include-hidden-files: true
 
-      - name: Extract release notes
-        run: sh ./scripts/extract_release_notes.sh "$GITHUB_REF_NAME" .release-notes.md
+  publish-prerelease:
+    if: needs.build.outputs.prerelease == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: {name: testpypi, url: https://test.pypi.org/p/vbart}
+    permissions: {id-token: write}
+    steps:
+      - uses: actions/download-artifact@v8
+        with: {name: python-package-distributions}
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with: {repository-url: https://test.pypi.org/legacy/, skip-existing: true}
 
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: >
-          gh release create "$GITHUB_REF_NAME"
-          --verify-tag
-          --title "Release $GITHUB_REF_NAME"
-          --notes-file .release-notes.md
+  publish-stable:
+    if: needs.build.outputs.prerelease == 'false'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: {name: pypi, url: https://pypi.org/p/vbart}
+    permissions: {id-token: write}
+    steps:
+      - uses: actions/download-artifact@v8
+        with: {name: python-package-distributions}
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-prerelease:
+    if: needs.build.outputs.prerelease == 'true'
+    needs: [build, publish-prerelease]
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/download-artifact@v8
+        with: {name: python-package-distributions}
+      - env: {GH_TOKEN: ${{ github.token }}}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --title "vbart $GITHUB_REF_NAME" --notes-file .release-notes.md --prerelease --verify-tag
+
+  github-stable:
+    if: needs.build.outputs.prerelease == 'false'
+    needs: [build, publish-stable]
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - uses: actions/download-artifact@v8
+        with: {name: python-package-distributions}
+      - env: {GH_TOKEN: ${{ github.token }}}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* --title "vbart $GITHUB_REF_NAME" --notes-file .release-notes.md --verify-tag
+          latest_release_tag="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)"
+          python -m scripts.update_latest_tag "$GITHUB_REF_NAME" "$latest_release_tag" "$GITHUB_SHA"

@@ -5,8 +5,8 @@ import sys
 
 from docker import errors  # type:ignore
 
-from vbart.runtime import get_docker_client
 from vbart.classes import Labels
+from vbart.runtime import get_docker_client
 from vbart.utilities import backup_one_volume
 from vbart.utilities import verify_utility_image
 
@@ -32,8 +32,6 @@ def task_runner(args: argparse.Namespace) -> None:
 
     labels.next()
     print(backup_one_volume(args.volume_name, args.compression))
-
-    return
 
 
 if __name__ == "__main__":
