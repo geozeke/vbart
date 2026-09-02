@@ -11,7 +11,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
-    """Write the requested release notes to the output path."""
+    """Write the requested release notes to the output path.
+
+    Raises
+    ------
+    SystemExit
+        If the tag has no valid release notes.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("tag")
     parser.add_argument("output", type=Path)

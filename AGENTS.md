@@ -56,6 +56,7 @@ restoring Docker named volumes.
 ## Release Workflow
 
 - Update code and documentation before preparing a release.
+- Install `git-cliff` before using `just changelog` or `just bump`.
 - Use Conventional Commit pull-request titles. Preview user-facing release
   notes with `just changelog`.
 - Create a release branch, such as `release/v0.5.0` or

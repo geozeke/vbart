@@ -54,10 +54,10 @@ uv tool install vbart
 
 ### Development and releases
 
-Install development dependencies with `just setup`, then run the complete
-local quality gate with `just check`. Pull-request titles must use
-Conventional Commits; `just changelog` previews entries that will appear in
-the next release.
+Install [uv][def6], [just][def7], and
+[git-cliff][def8], then run `just setup` and the complete local quality
+gate, `just check`. Pull-request titles must use Conventional Commits;
+`just changelog` previews entries that will appear in the next release.
 
 Prepare a release with `just bump 0.5.0` (or a PEP 440 prerelease such as
 `0.5.0rc1`), merge the release preparation pull request, then run
@@ -196,7 +196,9 @@ Apache 2.0 License. The full license text can be found in the
 
 [def]: https://hub.docker.com/extensions/docker/volumes-backup-extension
 [def2]: https://pipx.pypa.io/stable/
-[def3]: https://github.com/geozeke/vbart/blob/c87927233222bd5ac86a4a83083cc123e9fc0f9f/LICENSE
-[def4]: https://github.com/geozeke/vbart/blob/c87927233222bd5ac86a4a83083cc123e9fc0f9f/LICENSE-APACHE-2_0
+[def3]: LICENSE
+[def4]: LICENSE-APACHE-2_0
 [def5]: https://github.com/docker/docker-py
 [def6]: https://docs.astral.sh/uv
+[def7]: https://just.systems/
+[def8]: https://git-cliff.org/

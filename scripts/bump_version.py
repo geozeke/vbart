@@ -21,7 +21,20 @@ CONVENTIONAL_BASELINE = "0795b5537486cfb13b3b2054309d5817dfcbcbc1"
 
 
 def run(*args: str, capture: bool = False) -> str:
-    """Run a command from the project root."""
+    """Run a command from the project root.
+
+    Parameters
+    ----------
+    *args
+        Command and arguments to execute.
+    capture
+        Whether to return standard output.
+
+    Returns
+    -------
+    str
+        Captured standard output, or an empty string.
+    """
     result = subprocess.run(
         args, cwd=ROOT, check=True, text=True, capture_output=capture
     )
@@ -29,7 +42,13 @@ def run(*args: str, capture: bool = False) -> str:
 
 
 def validate_release_commits() -> None:
-    """Require Conventional Commit subjects since the migration baseline."""
+    """Require Conventional Commit subjects since the migration baseline.
+
+    Raises
+    ------
+    ValueError
+        If a non-merge commit has an unsupported title.
+    """
     subjects = run(
         "git",
         "log",
@@ -46,7 +65,20 @@ def validate_release_commits() -> None:
 
 
 def bump(version_text: str) -> None:
-    """Generate notes, update metadata, and archive inactive release lines."""
+    """Generate notes, update metadata, and archive inactive release lines.
+
+    Parameters
+    ----------
+    version_text
+        Canonical PEP 440 release version.
+
+    Raises
+    ------
+    ValueError
+        If release prerequisites or generated metadata are invalid.
+    subprocess.CalledProcessError
+        If an external release command fails.
+    """
     target = parse_version(version_text)
     if run("git", "status", "--porcelain=v1", "--untracked-files=all", capture=True):
         raise ValueError("Working tree must be clean before preparing a release")
@@ -110,7 +142,13 @@ def bump(version_text: str) -> None:
 
 
 def main() -> None:
-    """Parse and prepare a target version."""
+    """Parse and prepare a target version.
+
+    Raises
+    ------
+    SystemExit
+        If command-line validation or release preparation fails.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("version", help="Canonical PEP 440 version, such as 0.5.0rc1.")
     args = parser.parse_args()
