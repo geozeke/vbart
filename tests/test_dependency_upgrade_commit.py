@@ -6,7 +6,6 @@ import json
 import sys
 from pathlib import Path
 
-
 SCRIPT_PATH = (
     Path(__file__).resolve().parents[1] / "scripts" / "dependency_upgrade_commit.py"
 )

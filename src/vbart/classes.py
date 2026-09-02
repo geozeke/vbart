@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Support classes for status-label handling."""
 
 import sys
@@ -31,7 +30,6 @@ class Labels:
         # string, it evaluates to False otherwise it's True.
         self.labels = [t for token in s.split("\n") if (t := token.strip())]
         self.pad = len(max(self.labels, key=len)) + 3
-        return
 
     def next(self) -> None:
         """Print the next label.
@@ -44,7 +42,6 @@ class Labels:
         if len(self.labels) == 0:
             raise ExhaustedListError()
         print(f"{self.labels.pop(0):.<{self.pad}}", end="", flush=True)
-        return
 
     def pop_first(self) -> str:
         """Pop and return the first label.

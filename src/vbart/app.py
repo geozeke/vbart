@@ -8,6 +8,7 @@ import sys
 from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
+
 from docker import errors  # type:ignore
 
 from vbart.constants import APP_NAME
@@ -113,8 +114,6 @@ def main() -> None:
     else:
         mod = importlib.import_module(f"{APP_NAME}.null")
     mod.task_runner(args)
-
-    return
 
 
 if __name__ == "__main__":

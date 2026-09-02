@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Archive old minor-version changelog entries.
 
 Functions
@@ -13,7 +12,6 @@ import argparse
 import re
 from dataclasses import dataclass
 from pathlib import Path
-
 
 HEADING_RE = re.compile(
     r"^##\s+v?(?P<version>\d+\.\d+\.\d+(?:-(?:beta|rc)\.\d+)?)"

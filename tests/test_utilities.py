@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from datetime import tzinfo
 from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Any
@@ -13,18 +14,18 @@ from tests.conftest import FakeClient
 from tests.conftest import FakeContainers
 from tests.conftest import FakeImages
 from tests.conftest import FakeSavedImage
+from vbart import utilities
 from vbart.constants import BASE_IMAGE
 from vbart.constants import HELPER_IMAGE_VERSION
 from vbart.constants import HELPER_IMAGE_VERSION_LABEL
 from vbart.constants import PASS
 from vbart.constants import UTILITY_IMAGE
-from vbart import utilities
 
 
 class FrozenDateTime:
     @classmethod
-    def now(cls) -> datetime:
-        return datetime(2026, 4, 20, 9, 30, 0)
+    def now(cls, tz: tzinfo | None = None) -> datetime:
+        return datetime(2026, 4, 20, 9, 30, 0, tzinfo=tz)
 
 
 def test_verify_utility_image_returns_when_image_exists(

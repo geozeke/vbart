@@ -77,8 +77,6 @@ def task_runner(args: argparse.Namespace) -> None:
         volume.remove()  # type:ignore
         sys.exit(1)
 
-    return
-
 
 if __name__ == "__main__":
     pass

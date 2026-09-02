@@ -1,9 +1,9 @@
 """Runtime compatibility helpers for Docker-backed execution."""
 
+import sys
+from pathlib import Path
 from typing import Any
 from typing import Protocol
-from pathlib import Path
-import sys
 
 import docker  # type:ignore
 
