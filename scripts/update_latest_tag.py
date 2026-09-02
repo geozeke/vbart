@@ -7,7 +7,15 @@ import subprocess
 
 
 def main() -> None:
-    """Force-update ``latest`` only when it matches the newest release."""
+    """Force-update ``latest`` only when it matches the newest release.
+
+    Raises
+    ------
+    SystemExit
+        If the release is not the newest stable GitHub release.
+    subprocess.CalledProcessError
+        If Git cannot update the mutable tag.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("release_tag")
     parser.add_argument("latest_release_tag")

@@ -8,7 +8,13 @@ from .changelog_tools import validate_commit_title
 
 
 def main() -> None:
-    """Parse and validate the title argument."""
+    """Parse and validate the title argument.
+
+    Raises
+    ------
+    SystemExit
+        If the title is not a supported Conventional Commit.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("title")
     args = parser.parse_args()

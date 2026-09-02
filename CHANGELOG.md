@@ -12,6 +12,10 @@ project versions follow [PEP 440](https://peps.python.org/pep-0440/).
 
 - Fix broken release pipeline syntax ([0e80b97](https://github.com/geozeke/vbart/commit/0e80b97f5d746379b18f8e4d67cf081bacf1dd24))
 
+## [0.4.1] - 2026-09-02
+
+[Compare with 0.4.0](https://github.com/geozeke/vbart/compare/v0.4.0...v0.4.1)
+
 ### Deployment & Operations
 
 - Upgrade dependency/release pipeline (#61) ([f72e3ae](https://github.com/geozeke/vbart/commit/f72e3aec9627c447054f88c5c7779803f3bffa15))

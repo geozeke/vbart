@@ -14,7 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
-    """Validate a tag and optionally write GitHub Actions outputs."""
+    """Validate a tag and optionally write GitHub Actions outputs.
+
+    Raises
+    ------
+    SystemExit
+        If tag, metadata, or release notes are invalid.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("tag")
     parser.add_argument("--github-output", type=Path)

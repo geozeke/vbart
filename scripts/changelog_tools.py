@@ -40,7 +40,17 @@ GROUPS = (
 
 @dataclass(frozen=True)
 class Version:
-    """Represent a canonical PEP 440 project version."""
+    """Represent a canonical PEP 440 project version.
+
+    Parameters
+    ----------
+    text
+        Canonical version text.
+    major, minor, patch
+        Numeric version components.
+    prerelease
+        Optional canonical prerelease suffix.
+    """
 
     text: str
     major: int
@@ -50,11 +60,23 @@ class Version:
 
     @property
     def major_minor(self) -> tuple[int, int]:
-        """Return the major and minor release line."""
+        """Return the major and minor release line.
+
+        Returns
+        -------
+        tuple[int, int]
+            The major and minor components.
+        """
         return self.major, self.minor
 
     def sort_key(self) -> tuple[int, int, int, int, int]:
-        """Return a release ordering key."""
+        """Return a release ordering key.
+
+        Returns
+        -------
+        tuple[int, int, int, int, int]
+            A key that places stable releases after prereleases.
+        """
         if not self.prerelease:
             return self.major, self.minor, self.patch, 3, 0
         match = re.fullmatch(r"(a|b|rc)(\d+)", self.prerelease)
@@ -65,19 +87,49 @@ class Version:
 
 @dataclass(frozen=True)
 class Section:
-    """Represent one canonical changelog section."""
+    """Represent one canonical changelog section.
+
+    Parameters
+    ----------
+    label
+        ``Unreleased`` or a canonical release version.
+    text
+        Complete Markdown section text.
+    """
 
     label: str
     text: str
 
     @property
     def version(self) -> Version | None:
-        """Return the section version, if this is a release."""
+        """Return the section version, if this is a release.
+
+        Returns
+        -------
+        Version | None
+            Parsed release metadata, or ``None`` for Unreleased.
+        """
         return None if self.label == "Unreleased" else parse_version(self.label)
 
 
 def parse_version(text: str) -> Version:
-    """Parse a canonical PEP 440 version without a leading ``v``."""
+    """Parse a canonical PEP 440 version without a leading ``v``.
+
+    Parameters
+    ----------
+    text
+        Bare canonical version text.
+
+    Returns
+    -------
+    Version
+        Parsed version metadata.
+
+    Raises
+    ------
+    ValueError
+        If ``text`` is not a supported canonical version.
+    """
     match = VERSION_RE.fullmatch(text)
     if match is None:
         raise ValueError(f"Expected canonical PEP 440 version, got: {text}")
@@ -88,7 +140,18 @@ def parse_version(text: str) -> Version:
 
 
 def split_changelog(text: str) -> tuple[str, list[Section]]:
-    """Split canonical changelog text into a preamble and sections."""
+    """Split canonical changelog text into a preamble and sections.
+
+    Parameters
+    ----------
+    text
+        Complete canonical changelog Markdown.
+
+    Returns
+    -------
+    tuple[str, list[Section]]
+        Preamble text and ordered release sections.
+    """
     lines = text.splitlines()
     starts = [index for index, line in enumerate(lines) if HEADING_RE.fullmatch(line)]
     if not starts:
@@ -105,7 +168,20 @@ def split_changelog(text: str) -> tuple[str, list[Section]]:
 
 
 def format_changelog(preamble: str, sections: list[Section]) -> str:
-    """Return normalized changelog text."""
+    """Return normalized changelog text.
+
+    Parameters
+    ----------
+    preamble
+        Changelog text before its first release heading.
+    sections
+        Ordered canonical release sections.
+
+    Returns
+    -------
+    str
+        Normalized Markdown ending in one newline.
+    """
     return (
         "\n\n".join(
             [preamble.strip(), *(item.text.strip() for item in sections)]
@@ -115,13 +191,42 @@ def format_changelog(preamble: str, sections: list[Section]) -> str:
 
 
 def validate_commit_title(title: str) -> None:
-    """Require a supported Conventional Commit title."""
+    """Require a supported Conventional Commit title.
+
+    Parameters
+    ----------
+    title
+        Pull-request title to validate.
+
+    Raises
+    ------
+    ValueError
+        If the title is not a supported Conventional Commit.
+    """
     if not TITLE_RE.fullmatch(title):
         raise ValueError("Expected a supported Conventional Commit title")
 
 
 def project_version(root: Path, expected: str | None = None) -> str:
-    """Require matching project and lockfile versions."""
+    """Require matching project and lockfile versions.
+
+    Parameters
+    ----------
+    root
+        Project root containing metadata files.
+    expected
+        Optional required canonical version.
+
+    Returns
+    -------
+    str
+        The synchronized project version.
+
+    Raises
+    ------
+    ValueError
+        If metadata is missing, inconsistent, or unexpected.
+    """
     with (root / "pyproject.toml").open("rb") as handle:
         pyproject = tomllib.load(handle)
     with (root / "uv.lock").open("rb") as handle:
@@ -139,7 +244,22 @@ def project_version(root: Path, expected: str | None = None) -> str:
 def validate_changelog_collection(
     changelog: Path, archives: Path, expected: str | None = None
 ) -> None:
-    """Validate active and archived changelogs use only the current format."""
+    """Validate active and archived changelogs use only the current format.
+
+    Parameters
+    ----------
+    changelog
+        Path to the active changelog.
+    archives
+        Directory containing archived minor release lines.
+    expected
+        Optional release version that must be present.
+
+    Raises
+    ------
+    ValueError
+        If changelog structure, ordering, categories, or versions are invalid.
+    """
     seen: set[str] = set()
     for path in [changelog, *sorted(archives.glob("v*.x.md"))]:
         preamble, sections = split_changelog(path.read_text(encoding="utf-8"))
@@ -177,7 +297,17 @@ def validate_changelog_collection(
 
 
 def archive_changelog(version: str, changelog: Path, archives: Path) -> None:
-    """Archive release sections outside ``version``'s minor line."""
+    """Archive release sections outside ``version``'s minor line.
+
+    Parameters
+    ----------
+    version
+        Canonical target version.
+    changelog
+        Active changelog path to update.
+    archives
+        Directory where inactive minor lines are stored.
+    """
     target = parse_version(version)
     preamble, sections = split_changelog(changelog.read_text(encoding="utf-8"))
     active: list[Section] = []
@@ -209,7 +339,27 @@ def archive_changelog(version: str, changelog: Path, archives: Path) -> None:
 
 
 def extract_release_notes(tag: str, changelog: Path, archives: Path) -> str:
-    """Return the body of a release section selected by its ``v`` tag."""
+    """Return the body of a release section selected by its ``v`` tag.
+
+    Parameters
+    ----------
+    tag
+        Version tag beginning with ``v``.
+    changelog
+        Active changelog path.
+    archives
+        Directory containing archived changelogs.
+
+    Returns
+    -------
+    str
+        Release notes excluding the release heading.
+
+    Raises
+    ------
+    ValueError
+        If the tag is invalid or has no unique nonempty section.
+    """
     if not tag.startswith("v"):
         raise ValueError("Release tag must start with v")
     version = parse_version(tag[1:])
