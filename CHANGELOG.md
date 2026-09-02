@@ -4,9 +4,13 @@ All notable changes to vbart are documented here. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project versions follow [PEP 440](https://peps.python.org/pep-0440/).
 
-## [0.4.1] - 2026-09-02
+## [0.4.2] - 2026-09-02
 
-[Compare with 0.4.0](https://github.com/geozeke/vbart/compare/v0.4.0...v0.4.1)
+[Compare with 0.4.1](https://github.com/geozeke/vbart/compare/v0.4.1...v0.4.2)
+
+### Fixed
+
+- Fix broken release pipeline syntax ([0e80b97](https://github.com/geozeke/vbart/commit/0e80b97f5d746379b18f8e4d67cf081bacf1dd24))
 
 ### Deployment & Operations
 
