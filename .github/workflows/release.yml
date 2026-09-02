@@ -48,47 +48,64 @@ jobs:
     if: needs.build.outputs.prerelease == 'true'
     needs: build
     runs-on: ubuntu-latest
-    environment: {name: testpypi, url: https://test.pypi.org/p/vbart}
-    permissions: {id-token: write}
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/vbart
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v8
-        with: {name: python-package-distributions}
+        with:
+          name: python-package-distributions
       - uses: pypa/gh-action-pypi-publish@release/v1
-        with: {repository-url: https://test.pypi.org/legacy/, skip-existing: true}
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
 
   publish-stable:
     if: needs.build.outputs.prerelease == 'false'
     needs: build
     runs-on: ubuntu-latest
-    environment: {name: pypi, url: https://pypi.org/p/vbart}
-    permissions: {id-token: write}
+    environment:
+      name: pypi
+      url: https://pypi.org/p/vbart
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v8
-        with: {name: python-package-distributions}
+        with:
+          name: python-package-distributions
       - uses: pypa/gh-action-pypi-publish@release/v1
 
   github-prerelease:
     if: needs.build.outputs.prerelease == 'true'
     needs: [build, publish-prerelease]
     runs-on: ubuntu-latest
-    permissions: {contents: write}
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v8
-        with: {name: python-package-distributions}
-      - env: {GH_TOKEN: ${{ github.token }}}
+        with:
+          name: python-package-distributions
+      - env:
+          GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" dist/* --title "vbart $GITHUB_REF_NAME" --notes-file .release-notes.md --prerelease --verify-tag
 
   github-stable:
     if: needs.build.outputs.prerelease == 'false'
     needs: [build, publish-stable]
     runs-on: ubuntu-latest
-    permissions: {contents: write}
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
-        with: {fetch-depth: 0}
+        with:
+          fetch-depth: 0
       - uses: actions/download-artifact@v8
-        with: {name: python-package-distributions}
-      - env: {GH_TOKEN: ${{ github.token }}}
+        with:
+          name: python-package-distributions
+      - env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" dist/* --title "vbart $GITHUB_REF_NAME" --notes-file .release-notes.md --verify-tag
           latest_release_tag="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)"
