@@ -46,7 +46,7 @@ dependencies = ["docker>=7.2.0,<8.0.0"]
 vbart = "vbart.app:main"
 
 [build-system]
-requires = ["uv-build>=0.10,<0.12"]
+requires = ["uv-build>=0.12,<0.13"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -54,6 +54,13 @@ exclude = ["global-gitignore.txt", ".gitignore", "uv.lock"]
 
 [tool.ruff.lint.isort]
 force-single-line = true
+
+[tool.uv]
+cache-dir = ".uv-cache"
+python-preference = "only-managed"
+
+[tool.uv.sources]
+vbart = { workspace = true }
 
 [tool.coverage.run]
 branch = true
@@ -72,4 +79,5 @@ dev = [
     "pytest>=9.0.2,<10",
     "pytest-cov>=7.0.0,<8",
     "ruff>=0.16,<1",
+    "tomli>=2,<3; python_version < '3.11'",
 ]

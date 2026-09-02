@@ -52,6 +52,19 @@ You can also install it with [uv][def6]:
 uv tool install vbart
 ```
 
+### Development and releases
+
+Install development dependencies with `just setup`, then run the complete
+local quality gate with `just check`. Pull-request titles must use
+Conventional Commits; `just changelog` previews entries that will appear in
+the next release.
+
+Prepare a release with `just bump 0.5.0` (or a PEP 440 prerelease such as
+`0.5.0rc1`), merge the release preparation pull request, then run
+`just tag-release` from an up-to-date `main`. Release CI validates, builds,
+and smoke-tests the artifacts, publishes prereleases to TestPyPI and stable
+releases to PyPI through Trusted Publishing, and creates the GitHub Release.
+
 ### Runtime Support
 
 vbart supports:

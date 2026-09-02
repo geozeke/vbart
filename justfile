@@ -1,8 +1,9 @@
 set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
 project_name := "vbart"
 
-# Show help
-default: help
+# Show available recipes
+default:
+    @just --list
 
 # Open a generated HTML report in the default browser
 _display_webpage web_path:
@@ -27,39 +28,13 @@ _require_setup:
 
 # --------------------------------------------
 
-# Build package for publishing
-build:
-    rm -rf dist
-    uv build
-
-# --------------------------------------------
-
 # Bump the project version and generate changelog
 bump version:
-    #!/usr/bin/env bash
-    new_version="{{version}}"
-    new_version="${new_version#v}"
-    git cliff --unreleased --tag "$new_version" --prepend CHANGELOG.md
-    uv run python scripts/archive_changelog.py "$new_version"
-    tmp_changelog="$(mktemp)"
-    awk '
-        NR == 1 { print; prev = $0; next }
-        /^## / && prev !~ /^[[:space:]]*$/ { print "" }
-        { print; prev = $0 }
-    ' CHANGELOG.md > "$tmp_changelog"
-    mv "$tmp_changelog" CHANGELOG.md
-    tmp_file="$(mktemp)"
-    awk -v version="$new_version" '
-        BEGIN { replaced = 0 }
-        /^version = "/ && !replaced {
-            print "version = \"" version "\""
-            replaced = 1
-            next
-        }
-        { print }
-    ' pyproject.toml > "$tmp_file"
-    mv "$tmp_file" pyproject.toml
-    just sync
+    uv run python -m scripts.bump_version {{version}}
+
+# Preview release-note-visible commits
+changelog:
+    git-cliff --unreleased
 
 # --------------------------------------------
 
@@ -91,45 +66,15 @@ coverage-open: coverage
 
 # --------------------------------------------
 
-# Show available recipes
-help:
-    @just --list
+# Format Python files and apply fixable lint rules
+format:
+    uv run ruff check --fix .
+    uv run ruff format .
 
-# --------------------------------------------
-
-# Run lint checks
+# Run lint and formatting checks
 lint:
     uv run ruff check .
-
-# --------------------------------------------
-
-# Publish package to pypi.org for production
-publish-production: build
-    #!/usr/bin/env bash
-    if [ ! -f "$HOME/.secrets" ]; then
-        echo 'Missing "$HOME/.secrets"'
-        exit 1
-    fi
-    set -a
-    . "$HOME/.secrets"
-    set +a
-    : "${PYPI_PROD:?Missing PYPI_PROD in $HOME/.secrets}"
-    uv publish --publish-url https://upload.pypi.org/legacy/ -t "$PYPI_PROD"
-
-# --------------------------------------------
-
-# Publish package to test.pypi.org for testing
-publish-test: build
-    #!/usr/bin/env bash
-    if [ ! -f "$HOME/.secrets" ]; then
-        echo 'Missing "$HOME/.secrets"'
-        exit 1
-    fi
-    set -a
-    . "$HOME/.secrets"
-    set +a
-    : "${PYPI_TEST:?Missing PYPI_TEST in $HOME/.secrets}"
-    uv publish --publish-url https://test.pypi.org/legacy/ -t "$PYPI_TEST"
+    uv run ruff format --check .
 
 # --------------------------------------------
 
@@ -173,15 +118,12 @@ sync: _require_setup
 
 # --------------------------------------------
 
-# Generate release tag
+# Run the complete local quality-check suite
+check: lint typecheck test
+
+# Generate and push the release tag
 tag-release:
-    bash ./scripts/release_tags.sh
-
-# --------------------------------------------
-
-# Generate release tag and update latest
-tag-release-latest:
-    bash ./scripts/release_tags.sh --latest
+    uv run python -m scripts.tag_release
 
 # --------------------------------------------
 
@@ -193,28 +135,4 @@ test:
 
 # Run static type checks
 typecheck:
-    uv run mypy src
-
-# --------------------------------------------
-
-# Show outdated top-level dependencies
-outdated:
-    #!/usr/bin/env bash
-    export UV_CACHE_DIR="${UV_CACHE_DIR:-.uv-cache}"
-    uv tree --outdated --depth=1 --all-groups | awk '
-        /latest/ {
-            found = 1
-            print
-        }
-        END {
-            if (!found) {
-                print "No outdated top-level dependencies found."
-            }
-        }
-    '
-
-# --------------------------------------------
-
-# Upgrade dependencies
-upgrade: _require_setup
-    bash ./scripts/upgrade_dependencies.sh
+    uv run mypy src scripts
