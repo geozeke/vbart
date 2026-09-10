@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts import bump_version
 from scripts.changelog_tools import extract_release_notes
 from scripts.changelog_tools import parse_version
 from scripts.changelog_tools import validate_changelog_collection
@@ -37,6 +38,45 @@ def test_validate_commit_title_requires_supported_conventional_type() -> None:
     validate_commit_title("feat(release): add canonical changelog tooling")
     with pytest.raises(ValueError, match="Conventional"):
         validate_commit_title("Add canonical changelog tooling")
+
+
+def test_release_commit_validation_uses_latest_reachable_version_tag(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Only commits since the newest reachable release are validated."""
+    calls: list[tuple[str, ...]] = []
+
+    def fake_run(*args: str, capture: bool = False) -> str:
+        """Return Git output for the release-validation commands."""
+        assert capture
+        calls.append(args)
+        if args[:3] == ("git", "tag", "--merged"):
+            return "v0.4.1\nv0.4.2\nlatest\n"
+        if args[:2] == ("git", "log"):
+            return "docs: document release workflow\n"
+        raise AssertionError(f"Unexpected command: {args}")
+
+    monkeypatch.setattr(bump_version, "run", fake_run)
+
+    bump_version.validate_release_commits()
+
+    assert calls[1] == (
+        "git",
+        "log",
+        "v0.4.2..HEAD",
+        "--no-merges",
+        "--format=%s",
+    )
+
+
+def test_latest_release_tag_requires_reachable_version_tag(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Release preparation fails clearly without a reachable version tag."""
+    monkeypatch.setattr(bump_version, "run", lambda *args, **kwargs: "latest\n")
+
+    with pytest.raises(ValueError, match="No reachable canonical version tag"):
+        bump_version.latest_release_tag()
 
 
 def test_changelog_validation_rejects_legacy_categories(tmp_path: Path) -> None:

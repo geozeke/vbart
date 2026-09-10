@@ -17,7 +17,6 @@ from .changelog_tools import validate_changelog_collection
 from .changelog_tools import validate_commit_title
 
 ROOT = Path(__file__).resolve().parents[1]
-CONVENTIONAL_BASELINE = "0795b5537486cfb13b3b2054309d5817dfcbcbc1"
 
 
 def run(*args: str, capture: bool = False) -> str:
@@ -41,8 +40,36 @@ def run(*args: str, capture: bool = False) -> str:
     return result.stdout if capture else ""
 
 
+def latest_release_tag() -> str:
+    """Return the newest reachable canonical version tag.
+
+    Returns
+    -------
+    str
+        The tag for the most recent release reachable from ``HEAD``.
+
+    Raises
+    ------
+    ValueError
+        If no reachable canonical version tag exists.
+    """
+    tags = run(
+        "git", "tag", "--merged", "HEAD", "--list", "v*", capture=True
+    ).splitlines()
+    releases = []
+    for tag in tags:
+        try:
+            version = parse_version(tag.removeprefix("v"))
+        except ValueError:
+            continue
+        releases.append((version.sort_key(), tag))
+    if not releases:
+        raise ValueError("No reachable canonical version tag found")
+    return max(releases)[1]
+
+
 def validate_release_commits() -> None:
-    """Require Conventional Commit subjects since the migration baseline.
+    """Require Conventional Commit subjects since the previous release.
 
     Raises
     ------
@@ -52,7 +79,7 @@ def validate_release_commits() -> None:
     subjects = run(
         "git",
         "log",
-        f"{CONVENTIONAL_BASELINE}..HEAD",
+        f"{latest_release_tag()}..HEAD",
         "--no-merges",
         "--format=%s",
         capture=True,
