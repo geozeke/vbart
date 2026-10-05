@@ -4,6 +4,24 @@ All notable changes to vbart are documented here. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project versions follow [PEP 440](https://peps.python.org/pep-0440/).
 
+## [0.4.4] - 2026-10-05
+
+[Compare with 0.4.3](https://github.com/geozeke/vbart/compare/v0.4.3...v0.4.4)
+
+### Deployment & Operations
+
+- Lint git-cliff template ([9b18995](https://github.com/geozeke/vbart/commit/9b189956d07b4bc5a4e548c64d7e19438f2b7423))
+
+### Dependencies
+
+- *(deps-dev)* Bump ruff in the python-dependencies group ([7883530](https://github.com/geozeke/vbart/commit/7883530a9cace8813fc256a926046456ecd35867))
+- *(deps-dev)* Bump ruff in the python-dependencies group ([863ff9e](https://github.com/geozeke/vbart/commit/863ff9e4c37417fd2241a755677f31b66f1a6a67))
+- *(deps)* Bump astral-sh/setup-uv from 10.0.1 to 10.1.0 ([e2e419f](https://github.com/geozeke/vbart/commit/e2e419fabea0a8f248c19e20db2e67404720f61f))
+- *(deps-dev)* Bump ruff in the python-dependencies group ([3bb15c7](https://github.com/geozeke/vbart/commit/3bb15c70a1f7ef6c43a9d61c8b033eb9114ee993))
+- *(deps)* Bump astral-sh/setup-uv from 10.1.0 to 10.2.0 ([9e7e747](https://github.com/geozeke/vbart/commit/9e7e7473e808288ab6221b419b1544f4c95c98df))
+- *(deps-dev)* Bump ruff ([689be6d](https://github.com/geozeke/vbart/commit/689be6d28706cd379d71847fd4270f68dd7db201))
+- *(deps)* Bump urllib3 from 2.7.0 to 2.8.0 ([1176601](https://github.com/geozeke/vbart/commit/117660138f66c470a5e50c12805936feba354ad2))
+
 ## [0.4.3] - 2026-09-10
 
 [Compare with 0.4.2](https://github.com/geozeke/vbart/compare/v0.4.2...v0.4.3)
