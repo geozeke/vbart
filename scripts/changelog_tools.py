@@ -320,7 +320,7 @@ def archive_changelog(version: str, changelog: Path, archives: Path) -> None:
             moved.setdefault(parsed.major_minor, []).append(section)
     for minor, sections_to_move in moved.items():
         path = archives / f"v{minor[0]}.{minor[1]}.x.md"
-        existing = (
+        existing: list[Section] = (
             split_changelog(path.read_text(encoding="utf-8"))[1]
             if path.exists()
             else []

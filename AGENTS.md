@@ -25,7 +25,7 @@ restoring Docker named volumes.
 - Preserve the current source layout unless a refactor is explicitly
   requested.
 - Do not traverse cache or generated-state directories such as
-  `.pytest_cache/`, `.mypy_cache/`, `.ruff_cache/`, `__pycache__/`,
+  `.pytest_cache/`, `.pyrefly_cache/`, `.ruff_cache/`, `__pycache__/`,
   or `.cache/` unless the task explicitly requires it.
 - Prefer reading `README.md`, `pyproject.toml`, and files under
   `src/vbart/` first.
@@ -94,7 +94,9 @@ restoring Docker named volumes.
   - `python -m vbart -h` or installed `vbart -h`
   - `ruff format`
   - `ruff`
-  - `mypy`
+  - `pyrefly check`
+- After Python changes, run `just typecheck`, correct every diagnostic,
+  and rerun it until it is clean before handoff.
 
 ## Notes
 

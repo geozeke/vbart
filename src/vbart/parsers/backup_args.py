@@ -1,5 +1,8 @@
 """Argument parser for the ``backup`` command."""
 
+from __future__ import annotations
+
+from argparse import ArgumentParser
 from argparse import _SubParsersAction
 
 from vbart.compression import DEFAULT_COMPRESSION
@@ -8,7 +11,7 @@ from vbart.compression import SUPPORTED_COMPRESSIONS
 COMMAND_NAME = "backup"
 
 
-def load_command_args(sp: _SubParsersAction) -> None:
+def load_command_args(sp: _SubParsersAction[ArgumentParser]) -> None:
     """Register command-line arguments for ``backup``."""
     msg = """Back up a single named Docker volume."""
     parser = sp.add_parser(

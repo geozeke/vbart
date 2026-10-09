@@ -1,11 +1,14 @@
 """Argument parser for the ``refresh`` command."""
 
+from __future__ import annotations
+
+from argparse import ArgumentParser
 from argparse import _SubParsersAction
 
 COMMAND_NAME = "refresh"
 
 
-def load_command_args(sp: _SubParsersAction) -> None:
+def load_command_args(sp: _SubParsersAction[ArgumentParser]) -> None:
     """Register command-line arguments for ``refresh``."""
     msg = """Remove dangling vbart containers and recreate the helper image on the next run."""
     sp.add_parser(

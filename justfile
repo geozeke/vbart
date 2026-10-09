@@ -135,4 +135,4 @@ test:
 
 # Run static type checks
 typecheck:
-    uv run mypy src scripts
+    uv run pyrefly check
