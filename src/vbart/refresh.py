@@ -2,7 +2,7 @@
 
 import argparse
 
-from docker import errors  # type:ignore
+from docker import errors
 
 from vbart.constants import UTILITY_IMAGE
 from vbart.runtime import get_docker_client
@@ -32,7 +32,7 @@ def task_runner(args: argparse.Namespace) -> None:
     )
 
     for container in dangling:
-        container.remove(force=True)  # type:ignore
+        container.remove(force=True)
 
     # Delete the utility image and appropriate dependency.
 

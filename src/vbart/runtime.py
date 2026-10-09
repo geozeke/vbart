@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 from typing import Protocol
 
-import docker  # type:ignore
+import docker
 
 
 class UnsupportedRuntimeError(RuntimeError):
@@ -48,7 +48,7 @@ def validate_runtime_mode(client: SupportsDockerInfo) -> None:
         raise UnsupportedRuntimeError(msg)
 
 
-def get_docker_client() -> docker.DockerClient:  # type: ignore
+def get_docker_client() -> docker.DockerClient:
     """Return a Docker client after validating runtime availability."""
     # Preserve pre-7.2.0 Docker SDK behavior: vbart honors Docker
     # environment variables, but does not follow Docker CLI contexts.

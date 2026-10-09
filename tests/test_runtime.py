@@ -26,7 +26,7 @@ def test_normalize_bind_source_converts_windows_separators(
         def resolve(self) -> str:
             return r"C:\Users\me\backups"
 
-    assert runtime.normalize_bind_source(FakeResolvedPath()) == "C:/Users/me/backups"  # type: ignore[arg-type]
+    assert runtime.normalize_bind_source(FakeResolvedPath()) == "C:/Users/me/backups"
 
 
 def test_validate_runtime_mode_allows_linux_containers_on_windows(

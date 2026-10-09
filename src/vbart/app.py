@@ -9,7 +9,7 @@ from importlib.metadata import version
 from pathlib import Path
 from types import ModuleType
 
-from docker import errors  # type:ignore
+from docker import errors
 
 from vbart.constants import APP_NAME
 from vbart.constants import ARG_PARSERS_BASE

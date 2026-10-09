@@ -8,7 +8,7 @@ from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Any
 
-from docker import errors  # type:ignore
+from docker import errors
 
 from vbart.compression import DEFAULT_COMPRESSION
 from vbart.compression import get_compression
@@ -30,9 +30,6 @@ def verify_utility_image() -> None:
     If the helper image is missing, build it and remove any temporary
     image dependencies created during the build.
     """
-    # NOTE: The python docker package is not typed, so you'll see lots
-    # of "type: ignore" hashtags sprinkled throughout.
-
     client = get_docker_client()
     try:
         image = client.images.get(UTILITY_IMAGE)
@@ -67,7 +64,7 @@ def verify_utility_image() -> None:
 
     utility_image = client.images.get(UTILITY_IMAGE)
     with tf.TemporaryFile(mode="w+b") as f:
-        for chunk in utility_image.save(named=True):  # type: ignore
+        for chunk in utility_image.save(named=True):
             f.write(chunk)
         f.seek(0)
         client.images.remove(UTILITY_IMAGE)
@@ -153,7 +150,7 @@ def backup_one_volume(
             image=UTILITY_IMAGE,
             command=shell_cmd,
             remove=True,
-            volumes=volume_map,  # type:ignore
+            volumes=volume_map,
         )
         return PASS
     except errors.ContainerError:

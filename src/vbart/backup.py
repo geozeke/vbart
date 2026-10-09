@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from docker import errors  # type:ignore
+from docker import errors
 
 from vbart.classes import Labels
 from vbart.runtime import get_docker_client
