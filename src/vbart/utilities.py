@@ -2,8 +2,8 @@
 
 import shlex
 import tempfile as tf
+from datetime import UTC
 from datetime import datetime as dt
-from datetime import timezone
 from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Any
@@ -134,7 +134,7 @@ def backup_one_volume(
         ``PASS`` if the backup succeeds, otherwise ``FAIL``.
     """
     client = get_docker_client()
-    now = dt.now(timezone.utc).astimezone()
+    now = dt.now(UTC).astimezone()
     prefix = f"{now.year}{now.month:02d}{now.day:02d}"
     compression = get_compression(compression_name)
     p = Path(f"{prefix}-{volume}-backup{compression.suffix}")
