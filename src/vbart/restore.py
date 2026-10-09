@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from pathlib import PurePosixPath
 
-from docker import errors  # type:ignore
+from docker import errors
 
 from vbart.classes import Labels
 from vbart.compression import compression_from_path
@@ -68,13 +68,13 @@ def task_runner(args: argparse.Namespace) -> None:
             image=UTILITY_IMAGE,
             command=shell_cmd,
             remove=True,
-            volumes=volume_map,  # type:ignore
+            volumes=volume_map,
         )
         print(PASS)
     except errors.ContainerError:
         print(FAIL)
         print("\nInvalid backup file provided. Unable to restore.")
-        volume.remove()  # type:ignore
+        volume.remove()
         sys.exit(1)
 
 

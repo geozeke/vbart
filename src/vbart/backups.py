@@ -19,7 +19,7 @@ def task_runner(args: argparse.Namespace) -> None:
     """
     verify_utility_image()
     client = get_docker_client()
-    active_names = [v.name for v in client.volumes.list()]  # type:ignore
+    active_names = [v.name for v in client.volumes.list()]
 
     if args.volumes:
         print(f"Performing backups using {args.volumes}\n")
