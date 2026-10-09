@@ -84,5 +84,5 @@ dev = [
     "pytest>=9.0.2,<10",
     "pytest-cov>=7.0.0,<8",
     "ruff>=0.16,<1",
-    "types-docker==7.1.0.20260518",
+    "types-docker==7.2.0.20261006",
 ]
