@@ -4,6 +4,19 @@ All notable changes to vbart are documented here. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project versions follow [PEP 440](https://peps.python.org/pep-0440/).
 
+## [0.4.5] - 2026-10-09
+
+[Compare with 0.4.4](https://github.com/geozeke/vbart/compare/v0.4.4...v0.4.5)
+
+### Removed
+
+- Remove support for Python 3.10 (EOL) ([9392acb](https://github.com/geozeke/vbart/commit/9392acb9f3ea800a825a13c81c7968fb086b2619))
+
+### Deployment & Operations
+
+- Migrate type checker from mypy to pyrefly ([e1bc2ba](https://github.com/geozeke/vbart/commit/e1bc2ba8638e62b8ca265a6b19c9cd458f165881))
+- Fix suppressed type errors ([59974ef](https://github.com/geozeke/vbart/commit/59974ef77764255bd9247686746949b0874b6a54))
+
 ## [0.4.4] - 2026-10-05
 
 [Compare with 0.4.3](https://github.com/geozeke/vbart/compare/v0.4.3...v0.4.4)
