@@ -25,10 +25,10 @@ def task_runner(args: argparse.Namespace) -> None:
 
     # Prune any dangling containers.
 
-    filter = {"ancestor": f"{UTILITY_IMAGE}:latest"}
+    filters: dict[str, bool | list[str] | str] = {"ancestor": f"{UTILITY_IMAGE}:latest"}
     dangling = client.containers.list(
         all=True,
-        filters=filter,
+        filters=filters,
     )
 
     for container in dangling:

@@ -55,6 +55,12 @@ exclude = ["global-gitignore.txt", ".gitignore", "uv.lock"]
 [tool.ruff.lint.isort]
 force-single-line = true
 
+[tool.pyrefly]
+preset = "strict"
+project-includes = ["src", "scripts"]
+required-version = "==1.3.2"
+search-path = [".", "src"]
+
 [tool.uv]
 cache-dir = ".uv-cache"
 python-preference = "only-managed"
@@ -75,7 +81,7 @@ exclude_lines = [
 
 [dependency-groups]
 dev = [
-    "mypy>=2.0.0,<3",
+    "pyrefly==1.3.2",
     "pytest>=9.0.2,<10",
     "pytest-cov>=7.0.0,<8",
     "ruff>=0.16,<1",

@@ -1,12 +1,15 @@
 """Argument parser for the ``restore`` command."""
 
+from __future__ import annotations
+
+from argparse import ArgumentParser
 from argparse import _SubParsersAction
 from pathlib import Path
 
 COMMAND_NAME = "restore"
 
 
-def load_command_args(sp: _SubParsersAction) -> None:
+def load_command_args(sp: _SubParsersAction[ArgumentParser]) -> None:
     """Register command-line arguments for ``restore``."""
     msg = """Restore a single backup into a named Docker volume."""
     parser = sp.add_parser(
