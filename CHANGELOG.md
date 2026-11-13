@@ -4,6 +4,29 @@ All notable changes to vbart are documented here. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project versions follow [PEP 440](https://peps.python.org/pep-0440/).
 
+## [0.4.6] - 2026-11-13
+
+[Compare with 0.4.5](https://github.com/geozeke/vbart/compare/v0.4.5...v0.4.6)
+
+### Deployment & Operations
+
+- Remove version tag from pyrefly tooling ([3b7a979](https://github.com/geozeke/vbart/commit/3b7a979d33855577d216fea052e191384deb5980))
+
+### Dependencies
+
+- *(deps-dev)* Bump the python-dependencies group across 1 directory with 2 updates ([0c060ad](https://github.com/geozeke/vbart/commit/0c060ad1f5c9fbafa199dbb9ce2ac9ab7e3cb025))
+- *(deps-dev)* Bump ruff ([fda05e6](https://github.com/geozeke/vbart/commit/fda05e6ec2bae02791039f965b4f9fa3d10a0e8b))
+- *(deps-dev)* Update uv-build requirement ([3f2ebb9](https://github.com/geozeke/vbart/commit/3f2ebb9f759e98178042a4fef7f8774cef294a50))
+- *(deps)* Bump astral-sh/setup-uv from 10.2.0 to 10.3.0 ([70934f1](https://github.com/geozeke/vbart/commit/70934f11006ce0a1afbaff7bc0173c0e7a2aaa7b))
+- *(deps-dev)* Bump the python-dependencies group with 2 updates ([346e2ad](https://github.com/geozeke/vbart/commit/346e2ad45c7a0434c06c13f29507b6c9e5953724))
+- *(deps)* Bump certifi from 2026.4.22 to 2026.10.19 ([5be8fb5](https://github.com/geozeke/vbart/commit/5be8fb50d3c0ea146dd98fb1061e5d71765286d3))
+- *(deps-dev)* Bump ruff ([bde2199](https://github.com/geozeke/vbart/commit/bde2199fee0cbb1d9b9685700c7767f5ed64fe1c))
+- *(deps)* Bump astral-sh/setup-uv from 10.3.0 to 10.3.2 ([86e4b29](https://github.com/geozeke/vbart/commit/86e4b2950d250ea56327424c083ed01cfa18ef86))
+- *(deps-dev)* Bump pytest ([97e9db8](https://github.com/geozeke/vbart/commit/97e9db8a9b840992a971bf84289d164b4e7ce93a))
+- *(deps-dev)* Bump types-docker from 7.2.0.20261006 to 7.2.0.20261102 ([1ac9c2d](https://github.com/geozeke/vbart/commit/1ac9c2dd676c27d940af24163ad9fa3e7202c213))
+- *(deps)* Bump astral-sh/setup-uv from 10.3.2 to 10.3.3 ([aff07b1](https://github.com/geozeke/vbart/commit/aff07b107bee509481ed9d5534173878fec10b7d))
+- *(deps-dev)* Bump the python-dependencies group with 2 updates ([11ce767](https://github.com/geozeke/vbart/commit/11ce767b8178637f5130a9abe535e12c7053bf13))
+
 ## [0.4.5] - 2026-10-09
 
 [Compare with 0.4.4](https://github.com/geozeke/vbart/compare/v0.4.4...v0.4.5)
